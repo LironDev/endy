@@ -207,7 +207,7 @@ export function HomeScreen({ onCreateGame, onJoinGame }) {
       </motion.div>
 
       {/* Version footer */}
-      <p className="absolute bottom-4 text-purple-700/40 text-xs z-10">אנדי v0.1</p>
+      <p className="absolute bottom-4 text-purple-700/40 text-xs z-10">אנדי v1.0</p>
     </div>
   );
 }
