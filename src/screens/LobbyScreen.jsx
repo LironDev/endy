@@ -214,7 +214,7 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
             disabled={!canStart || starting}
             className="neon-btn w-full py-4 text-lg disabled:opacity-50"
           >
-            {starting ? 'מתחיל...' : `🚀 התחל משחק (${players.length} שחקנ${players.length === 1 ? '' : 'ים'})`}
+            {starting ? 'מתחיל...' : `🚀 התחל משחק (${players.length} שחק${players.length === 1 ? 'ן' : 'נים'})`}
           </button>
         )}
 
