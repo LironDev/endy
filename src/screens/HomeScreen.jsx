@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { homeLogoVariants, homeCardVariants } from '../animations/variants';
+import { AppLogo } from '../components/AppLogo';
 
 // Floating star background particles
 function CosmicStars() {
@@ -84,6 +85,9 @@ export function HomeScreen({ onCreateGame, onJoinGame }) {
         animate="animate"
         className="mb-8 text-center z-10"
       >
+        <div className="flex justify-center mb-3">
+          <AppLogo size={72} />
+        </div>
         <h1 className="text-7xl sm:text-8xl font-black neon-text text-white leading-none mb-2">
           אנדי
         </h1>

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <!-- Background rounded square -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a0533"/>
+      <stop offset="100%" stop-color="#0f0020"/>
+    </linearGradient>
+    <!-- Ring gradient -->
+    <linearGradient id="ring1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e9d5ff"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="ring2" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <!-- Glow filter -->
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect x="1" y="1" width="62" height="62" rx="14" ry="14" fill="url(#bg)"/>
+
+  <!-- Subtle outer border -->
+  <rect x="1" y="1" width="62" height="62" rx="14" ry="14"
+        fill="none" stroke="#a855f7" stroke-width="1" stroke-opacity="0.35"/>
+
+  <!-- Chain link group, centered and slightly above middle -->
+  <g filter="url(#glow)" transform="translate(32, 30)">
+    <!-- Left ring -->
+    <circle cx="-9" cy="0" r="10"
+            fill="none" stroke="url(#ring1)" stroke-width="4.5"
+            stroke-linecap="round"/>
+    <!-- Right ring (overlaps left) -->
+    <circle cx="9" cy="0" r="10"
+            fill="none" stroke="url(#ring2)" stroke-width="4.5"
+            stroke-linecap="round"/>
+    <!-- Cover the left ring's right arc to create interlock illusion -->
+    <!-- (white patch to simulate chain interlock: right ring passes behind left on top, in front on bottom) -->
+    <!-- Top overlap: left ring covers right ring at the top intersection -->
+    <path d="M 0,-8 A 10,10 0 0,0 0,8"
+          fill="none" stroke="url(#ring1)" stroke-width="5.5"
+          stroke-linecap="butt"/>
+  </g>
+
+  <!-- Small sparkle dots for cosmic feel -->
+  <circle cx="12" cy="12" r="1.2" fill="#c084fc" opacity="0.6"/>
+  <circle cx="52" cy="14" r="0.9" fill="#e9d5ff" opacity="0.5"/>
+  <circle cx="10" cy="50" r="0.8" fill="#c084fc" opacity="0.4"/>
+  <circle cx="54" cy="52" r="1.1" fill="#e9d5ff" opacity="0.5"/>
+</svg>
