@@ -138,7 +138,8 @@ export function useGame(gameId) {
     const score = calculateScore(normalized);
 
     try {
-      await fsSubmitWord(gameId, uid, normalized, score, gameDoc);
+      // Pass original word (for display) and normalized word (for dedup separately)
+      await fsSubmitWord(gameId, uid, word, normalized, score, gameDoc);
       return { success: true, score };
     } catch (err) {
       return { success: false, error: err.message };

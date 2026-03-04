@@ -164,13 +164,32 @@ export function HomeScreen({ onCreateGame, onJoinGame }) {
               <label className="block text-purple-300/70 text-sm mb-1.5">קוד משחק</label>
               <input
                 type="text"
+                dir="ltr"
                 value={joinCode}
                 onChange={e => setJoinCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))}
+                onPaste={e => {
+                  e.preventDefault();
+                  const pasted = e.clipboardData.getData('text');
+                  // If they pasted a full URL, extract the ?game= code
+                  const urlMatch = pasted.match(/[?&]game=([A-Za-z0-9]{4,8})/i);
+                  if (urlMatch) {
+                    setJoinCode(urlMatch[1].toUpperCase().slice(0, 6));
+                    return;
+                  }
+                  // Otherwise take first 6 alphanumeric chars
+                  setJoinCode(pasted.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6));
+                }}
                 onKeyDown={e => e.key === 'Enter' && handleJoin()}
                 placeholder="ABCDEF"
                 className="rtl-input text-center text-2xl tracking-[0.35em] font-mono uppercase"
                 maxLength={6}
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
               />
+              <p className="text-purple-400/40 text-xs text-center mt-1">
+                אפשר גם להדביק את הקישור כולו
+              </p>
             </div>
             <button
               onClick={handleJoin}

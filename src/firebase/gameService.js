@@ -100,8 +100,12 @@ export async function startGame(gameId, hostUid, config = null) {
 /**
  * Submits a valid word. Updates chain state, scores, and advances the turn.
  * Uses `increment` to safely handle concurrent Blitz submissions.
+ *
+ * displayWord  — original word as typed (may contain final letters ך/ם/ן/ף/ץ).
+ *                Stored in state.lastWord so the bubble shows the original spelling.
+ * normalizedWord — last-letter normalized form used for deduplication in usedWords.
  */
-export async function submitWord(gameId, uid, word, score, gameDoc) {
+export async function submitWord(gameId, uid, displayWord, normalizedWord, score, gameDoc) {
   const gameRef = doc(db, 'games', gameId);
   const playerUids = Object.keys(gameDoc.players);
 
@@ -113,10 +117,10 @@ export async function submitWord(gameId, uid, word, score, gameDoc) {
   }
 
   const updates = {
-    'state.lastWord': word,
+    'state.lastWord': displayWord,       // original spelling for display
     'state.lastPlayerId': uid,
     'state.currentTurnUid': nextTurnUid,
-    'state.usedWords': arrayUnion(word),
+    'state.usedWords': arrayUnion(normalizedWord), // normalized for dedup
     [`players.${uid}.score`]: increment(score),
   };
 
@@ -134,12 +138,20 @@ export async function submitWord(gameId, uid, word, score, gameDoc) {
 
 /**
  * Skips the current player's turn (Classic mode only).
+ * We derive the current player from state.currentTurnUid (not the passed uid)
+ * to guard against stale-uid edge cases that could cause backward advancement.
  */
 export async function skipTurn(gameId, uid, gameDoc) {
   const gameRef = doc(db, 'games', gameId);
   const playerUids = Object.keys(gameDoc.players);
-  const currentIdx = playerUids.indexOf(uid);
-  const nextTurnUid = playerUids[(currentIdx + 1) % playerUids.length];
+
+  // Use the authoritative currentTurnUid from state, falling back to uid
+  const currentUid = gameDoc.state?.currentTurnUid || uid;
+  const currentIdx = playerUids.indexOf(currentUid);
+
+  // If not found (shouldn't happen), default to first player
+  const safeIdx = currentIdx === -1 ? 0 : currentIdx;
+  const nextTurnUid = playerUids[(safeIdx + 1) % playerUids.length];
 
   await updateDoc(gameRef, {
     'state.currentTurnUid': nextTurnUid,

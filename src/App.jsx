@@ -32,10 +32,10 @@ function LoadingSpinner() {
 }
 
 export default function App() {
-  const [gameId, setGameId] = useState(() => {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('game') || null;
-  });
+  // Always start on HomeScreen (null).
+  // HomeScreen reads the ?game= param to pre-fill the join code.
+  // Only set gameId AFTER the user has explicitly joined/created (handleJoinGame / handleCreateGame).
+  const [gameId, setGameId] = useState(null);
 
   const uid = getCurrentUid();
 
