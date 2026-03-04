@@ -207,7 +207,7 @@ export function HomeScreen({ onCreateGame, onJoinGame }) {
       </motion.div>
 
       {/* Version footer */}
-      <p className="absolute bottom-4 text-purple-400/50 dark:text-purple-700/40 text-xs z-10">אנדי v1.0</p>
+      <p className="absolute bottom-4 text-purple-400/50 dark:text-purple-700/40 text-xs z-20">Endy  by  AVRAHAMI</p>
     </div>
   );
 }
