@@ -45,6 +45,7 @@ export default function App() {
     error,
     shaking,
     timeLeft,
+    turnTimeLeft,
     isMyTurn,
     submitWord,
     skipTurn,
@@ -130,6 +131,7 @@ export default function App() {
               submitWord={submitWord}
               skipTurn={skipTurn}
               timeLeft={timeLeft}
+              turnTimeLeft={turnTimeLeft}
               endGame={endGame}
             />
           </motion.div>

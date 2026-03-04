@@ -11,24 +11,34 @@ service cloud.firestore {
         && request.resource.data.config.hostId == request.auth.uid
         && request.resource.data.status == 'lobby';
 
-      // Update: authenticated + game not ended +
-      //   (existing player updating state) OR (new player joining lobby)
+      // Update is allowed in two scenarios:
       allow update: if request.auth != null
-        && resource.data.status != 'ended'
         && (
-          // Existing player is allowed to update any game state
-          request.auth.uid in resource.data.players
-          ||
-          // New player joining the lobby (adding only their own uid to players)
+          // ── Scenario A: Normal gameplay (game is NOT ended) ──────────────
           (
-            resource.data.status == 'lobby'
-            && request.auth.uid in request.resource.data.players
-            && !(request.auth.uid in resource.data.players)
-            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['players'])
+            resource.data.status != 'ended'
+            && (
+              // Existing player updating any game state
+              request.auth.uid in resource.data.players
+              ||
+              // New player joining the lobby (only adding their own uid to players)
+              (
+                resource.data.status == 'lobby'
+                && request.auth.uid in request.resource.data.players
+                && !(request.auth.uid in resource.data.players)
+                && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['players'])
+              )
+            )
+          )
+          ||
+          // ── Scenario B: Host resets an ended game back to lobby ──────────
+          (
+            resource.data.status == 'ended'
+            && request.auth.uid == resource.data.config.hostId
           )
         );
 
-      // Delete: host only (not currently exposed in UI but available for cleanup)
+      // Delete: host only
       allow delete: if request.auth != null
         && resource.data.config.hostId == request.auth.uid;
     }

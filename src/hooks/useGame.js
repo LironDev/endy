@@ -8,7 +8,7 @@ import {
   endGame as fsEndGame,
   setPlayerOnline,
 } from '../firebase/gameService';
-import { GAME_MODES } from '../utils/constants';
+import { GAME_MODES, TURN_TIME_LIMIT } from '../utils/constants';
 
 /**
  * Core game state hook. Manages a single Firestore onSnapshot listener and
@@ -19,7 +19,8 @@ export function useGame(gameId) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [shaking, setShaking] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(null);     // total game timer (ms)
+  const [turnTimeLeft, setTurnTimeLeft] = useState(null); // per-turn timer (seconds)
 
   // ── Firestore listener ────────────────────────────────────────────────────
 
@@ -86,6 +87,39 @@ export function useGame(gameId) {
 
     return () => clearInterval(interval);
   }, [gameDoc?.status, gameDoc?.state?.startedAt, gameDoc?.config?.timeLimit]);
+
+  // ── Per-turn countdown ────────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (!gameDoc || gameDoc.status !== 'playing') {
+      setTurnTimeLeft(null);
+      return;
+    }
+
+    const raw = gameDoc.state?.turnStartedAt;
+    if (!raw) {
+      // Game just started, no stamp yet — show full time
+      setTurnTimeLeft(TURN_TIME_LIMIT);
+      return;
+    }
+
+    const startMs = raw.toMillis ? raw.toMillis() : raw;
+
+    const tick = () => {
+      const remaining = Math.max(0, TURN_TIME_LIMIT - (Date.now() - startMs) / 1000);
+      setTurnTimeLeft(remaining);
+      return remaining;
+    };
+
+    const initial = tick();
+    if (initial <= 0) return;
+
+    const id = setInterval(() => {
+      if (tick() <= 0) clearInterval(id);
+    }, 200);
+
+    return () => clearInterval(id);
+  }, [gameDoc?.status, gameDoc?.state?.turnStartedAt]);
 
   // ── Shake animation ───────────────────────────────────────────────────────
 
@@ -173,6 +207,7 @@ export function useGame(gameId) {
     error,
     shaking,
     timeLeft,
+    turnTimeLeft,
     isMyTurn,
     submitWord,
     skipTurn,

@@ -82,6 +82,7 @@ export async function startGame(gameId, hostUid, config = null) {
     status: GAME_STATUS.PLAYING,
     'state.currentTurnUid': playerUids[0],
     'state.startedAt': serverTimestamp(),
+    'state.turnStartedAt': serverTimestamp(), // per-turn countdown
     'state.lastWord': '',
     'state.lastPlayerId': null,
     'state.usedWords': [],
@@ -120,6 +121,7 @@ export async function submitWord(gameId, uid, displayWord, normalizedWord, score
     'state.lastWord': displayWord,       // original spelling for display
     'state.lastPlayerId': uid,
     'state.currentTurnUid': nextTurnUid,
+    'state.turnStartedAt': serverTimestamp(), // reset per-turn countdown
     'state.usedWords': arrayUnion(normalizedWord), // normalized for dedup
     [`players.${uid}.score`]: increment(score),
   };
@@ -155,6 +157,7 @@ export async function skipTurn(gameId, uid, gameDoc) {
 
   await updateDoc(gameRef, {
     'state.currentTurnUid': nextTurnUid,
+    'state.turnStartedAt': serverTimestamp(), // reset per-turn countdown
   });
 }
 

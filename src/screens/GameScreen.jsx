@@ -6,12 +6,17 @@ import { WordInput } from '../components/WordInput';
 import { Leaderboard } from '../components/Leaderboard';
 import { ScoreParticleLayer } from '../components/ScoreParticle';
 import { TimerBar } from '../components/TimerBar';
+import { TurnTimer } from '../components/TurnTimer';
 import { SkipButton } from '../components/SkipButton';
 import { useScoreParticle } from '../hooks/useScoreParticle';
 import { GAME_MODES } from '../utils/constants';
 import { setPlayerOnline } from '../firebase/gameService';
 
-export function GameScreen({ gameDoc, gameId, uid, dictionary, shaking, isMyTurn, submitWord, skipTurn, timeLeft, endGame }) {
+export function GameScreen({
+  gameDoc, gameId, uid, dictionary,
+  shaking, isMyTurn, submitWord, skipTurn,
+  timeLeft, turnTimeLeft, endGame,
+}) {
   const { particles, spawnParticle, inputRef, registerLeaderboardRef } = useScoreParticle();
   const wordInputRef = useRef(null);
 
@@ -41,7 +46,15 @@ export function GameScreen({ gameDoc, gameId, uid, dictionary, shaking, isMyTurn
     }
   }, [myTurn]);
 
-  // ── Time's up: host ends the game ─────────────────────────────────────────
+  // ── Auto-skip when turn timer expires (Classic only) ──────────────────────
+
+  useEffect(() => {
+    if (turnTimeLeft !== null && turnTimeLeft <= 0 && myTurn && isClassic) {
+      skipTurn(uid);
+    }
+  }, [turnTimeLeft, myTurn, isClassic, skipTurn, uid]);
+
+  // ── Total time's up: host ends the game ───────────────────────────────────
 
   useEffect(() => {
     if (timeLeft === 0 && uid === gameDoc.config?.hostId) {
@@ -77,21 +90,22 @@ export function GameScreen({ gameDoc, gameId, uid, dictionary, shaking, isMyTurn
     if (isClassic) {
       const currentPlayer = gameDoc.players?.[gameDoc.state?.currentTurnUid];
       if (myTurn) return '✨ התורך!';
-      return `ממתין ל-${currentPlayer?.name || '...'} `;
+      return `ממתין ל-${currentPlayer?.name || '...'}`;
     }
-    // Blitz
     if (myTurn) return '⚡ קדימה!';
     return 'שחק/י!';
   };
 
   return (
-    <div className="game-screen cosmic-bg" dir="rtl">
+    <div
+      className="cosmic-bg flex flex-col overflow-hidden"
+      style={{ height: '100dvh' }}
+      dir="rtl"
+    >
       <ScoreParticleLayer particles={particles} />
 
-      {/* ── Header ──────────────────────────────────────────────────────── */}
-      <header className="px-3 pt-3 pb-2 flex flex-col gap-1.5">
-
-        {/* Top row: mode badge + turn indicator */}
+      {/* ── TOP: Header ─────────────────────────────────────────────────── */}
+      <header className="flex-shrink-0 px-3 pt-3 pb-1 flex flex-col gap-1">
         <div className="flex items-center justify-between">
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
             isClassic ? 'bg-blue-900/60 text-blue-300' : 'bg-amber-900/60 text-amber-300'
@@ -102,16 +116,15 @@ export function GameScreen({ gameDoc, gameId, uid, dictionary, shaking, isMyTurn
           <AnimatePresence mode="wait">
             <motion.span
               key={getTurnLabel()}
-              initial={{ opacity: 0, y: -5 }}
+              initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 5 }}
+              exit={{ opacity: 0, y: 4 }}
               className={`text-sm font-bold ${myTurn ? 'text-purple-200' : 'text-purple-400/70'}`}
             >
               {getTurnLabel()}
             </motion.span>
           </AnimatePresence>
 
-          {/* Target score indicator */}
           {gameDoc.config?.target && (
             <span className="text-xs text-purple-400/50">
               יעד: {gameDoc.config.target}
@@ -119,31 +132,13 @@ export function GameScreen({ gameDoc, gameId, uid, dictionary, shaking, isMyTurn
           )}
         </div>
 
-        {/* Timer bar */}
         {timeLimit && (
           <TimerBar timeLeft={timeLeft} totalTime={timeLimit} />
         )}
       </header>
 
-      {/* ── Main: Word Bubble ─────────────────────────────────────────────── */}
-      <main className="flex flex-col items-center justify-center px-4 overflow-hidden">
-        <WordBubble word={currentWord} />
-
-        {/* Last player who submitted */}
-        {lastPlayerId && gameDoc.players?.[lastPlayerId] && (
-          <motion.p
-            key={lastPlayerId}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-3 text-purple-400/50 text-xs text-center"
-          >
-            הוזן על ידי {gameDoc.players[lastPlayerId].name}
-          </motion.p>
-        )}
-      </main>
-
-      {/* ── Leaderboard ──────────────────────────────────────────────────── */}
-      <section className="px-3 overflow-y-auto max-h-[30vh]">
+      {/* ── TOP: Leaderboard (always visible, even with keyboard open) ────── */}
+      <section className="flex-shrink-0 px-3 pb-1 overflow-y-auto" style={{ maxHeight: '28vh' }}>
         <Leaderboard
           players={gameDoc.players || {}}
           uid={uid}
@@ -152,25 +147,55 @@ export function GameScreen({ gameDoc, gameId, uid, dictionary, shaking, isMyTurn
         />
       </section>
 
-      {/* ── Input Area ───────────────────────────────────────────────────── */}
-      <footer className="px-3 pb-safe pb-4 pt-2 flex flex-col gap-2">
-        {isClassic && (
-          <div className="flex justify-end">
+      {/* ── MIDDLE: flexible spacer (collapses when keyboard opens) ─────── */}
+      <div className="flex-1 min-h-0" />
+
+      {/* ── BOTTOM: Word display + input (stays visible above keyboard) ──── */}
+      <footer className="flex-shrink-0 px-3 pt-1 pb-safe flex flex-col gap-2"
+        style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
+      >
+        {/* Word bubble — compact version, right above the input */}
+        <div className="flex flex-col items-center gap-1">
+          <WordBubble word={currentWord} compact />
+
+          {/* Last submitted by */}
+          {lastPlayerId && gameDoc.players?.[lastPlayerId] && (
+            <motion.p
+              key={lastPlayerId}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-purple-400/40 text-xs text-center"
+            >
+              {gameDoc.players[lastPlayerId].name}
+            </motion.p>
+          )}
+        </div>
+
+        {/* Turn timer + skip row */}
+        <div className="flex items-center justify-between gap-2">
+          {/* Turn timer always shown on the left */}
+          <TurnTimer timeLeft={turnTimeLeft} />
+
+          {/* Skip button on the right (Classic only) */}
+          {isClassic ? (
             <SkipButton
               onSkip={() => skipTurn(uid)}
               isMyTurn={myTurn}
               disabled={false}
             />
-          </div>
-        )}
+          ) : (
+            <div /> /* spacer in Blitz */
+          )}
+        </div>
 
+        {/* Word input */}
         <WordInput
           ref={wordInputRef}
           inputRef={inputRef}
           onSubmit={handleSubmit}
           isMyTurn={myTurn}
           disabled={gameDoc.status !== 'playing'}
-          placeholder={gameDoc.state?.lastWord ? `מילה שמתחילה ב...` : 'הזינו כל מילה...'}
+          placeholder={currentWord ? `מילה שמתחילה ב...` : 'הזינו כל מילה...'}
         />
       </footer>
     </div>

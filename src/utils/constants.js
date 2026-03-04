@@ -33,3 +33,4 @@ export const DEFAULT_CONFIG = {
 
 export const MAX_PLAYERS = 8;
 export const MIN_WORD_LENGTH = 2;
+export const TURN_TIME_LIMIT = 20; // seconds per turn

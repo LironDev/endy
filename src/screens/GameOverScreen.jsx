@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { PlayerAvatar } from '../components/PlayerAvatar';
 import { Leaderboard } from '../components/Leaderboard';
 import { shareGame } from '../utils/gameId';
+import { generateResultsImage } from '../utils/shareImage';
 import { resetGame } from '../firebase/gameService';
-import { useState } from 'react';
-import toast from 'react-hot-toast';
 import {
   gameOverContainerVariants,
   gameOverItemVariants,
@@ -14,6 +15,7 @@ const MEDALS = ['🥇', '🥈', '🥉'];
 
 export function GameOverScreen({ gameDoc, gameId, uid, onHome }) {
   const [resetting, setResetting] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
   const players = Object.entries(gameDoc.players || {})
     .map(([id, data]) => ({ id, ...data }))
@@ -22,13 +24,49 @@ export function GameOverScreen({ gameDoc, gameId, uid, onHome }) {
   const winner = players[0];
   const isHost = gameDoc.config?.hostId === uid;
   const didWin = winner?.id === uid;
-  const winnerId = gameDoc.state?.winnerId;
 
-  const handleShare = async () => {
+  // ── Share game link ────────────────────────────────────────────────────────
+  const handleShareLink = async () => {
     const result = await shareGame(gameId);
     if (result.method === 'clipboard') toast.success('קישור הועתק!');
   };
 
+  // ── Share results image ────────────────────────────────────────────────────
+  const handleShareImage = async () => {
+    setSharing(true);
+    try {
+      const blob = await generateResultsImage(players, gameId);
+      const file = new File([blob], 'endy-results.png', { type: 'image/png' });
+
+      // Try native share (Android Chrome, iOS Safari 15+)
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          title: 'תוצאות אנדי 🏆',
+          text: `שיחקנו אנדי! ${winner?.name} ניצח/ה עם ${winner?.score} נקודות 🎉`,
+          files: [file],
+        });
+      } else {
+        // Fallback: download the image
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'endy-results.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast.success('תמונה הורדה! שתף/י אותה בוואצאפ 📲');
+      }
+    } catch (e) {
+      if (e?.name !== 'AbortError') {
+        toast.error('לא הצלחנו ליצור את התמונה');
+      }
+    } finally {
+      setSharing(false);
+    }
+  };
+
+  // ── Play again ─────────────────────────────────────────────────────────────
   const handlePlayAgain = async () => {
     if (!isHost) return;
     setResetting(true);
@@ -129,11 +167,24 @@ export function GameOverScreen({ gameDoc, gameId, uid, onHome }) {
           </p>
         )}
 
+        {/* Share results image — primary share action */}
         <button
-          onClick={handleShare}
-          className="w-full py-3 rounded-xl border border-purple-600/40 text-purple-300 text-sm font-semibold hover:bg-purple-800/30 transition"
+          onClick={handleShareImage}
+          disabled={sharing}
+          className="w-full py-3.5 rounded-xl bg-purple-700/40 border border-purple-500/50 text-purple-100 text-sm font-semibold hover:bg-purple-700/60 transition flex items-center justify-center gap-2 disabled:opacity-50"
         >
-          📤 שתף את המשחק
+          {sharing
+            ? <><span className="animate-spin">⏳</span> יוצר תמונה...</>
+            : <>📸 שתף תוצאות לוואצאפ</>
+          }
+        </button>
+
+        {/* Share game link */}
+        <button
+          onClick={handleShareLink}
+          className="w-full py-2.5 rounded-xl border border-purple-700/30 text-purple-400 text-sm font-medium hover:bg-purple-900/30 transition"
+        >
+          🔗 שתף קישור למשחק
         </button>
 
         <button
