@@ -44,12 +44,12 @@ export function Leaderboard({ players, uid, registerRef, compact = false }) {
             ref={el => registerRef && registerRef(player.id, el)}
             className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-colors duration-200 ${
               player.id === uid
-                ? 'bg-purple-600/30 border border-purple-500/40'
-                : 'bg-purple-950/40'
+                ? 'bg-purple-100/60 border border-purple-300/50 dark:bg-purple-600/30 dark:border-purple-500/40'
+                : 'bg-white/50 dark:bg-purple-950/40'
             }`}
           >
             {/* Rank */}
-            <span className="text-purple-400/50 text-xs w-4 flex-shrink-0 text-center font-mono">
+            <span className="text-purple-500/60 dark:text-purple-400/50 text-xs w-4 flex-shrink-0 text-center font-mono">
               {idx + 1}
             </span>
 
@@ -63,11 +63,13 @@ export function Leaderboard({ players, uid, registerRef, compact = false }) {
 
             {/* Name */}
             <span className={`text-sm font-medium flex-1 truncate ${
-              player.id === uid ? 'text-purple-100' : 'text-purple-200/80'
+              player.id === uid
+                ? 'text-purple-900 dark:text-purple-100'
+                : 'text-purple-700/90 dark:text-purple-200/80'
             }`}>
               {player.name}
               {player.id === uid && (
-                <span className="text-purple-400/60 text-xs mr-1">(את/ה)</span>
+                <span className="text-purple-500/60 dark:text-purple-400/60 text-xs mr-1">(את/ה)</span>
               )}
             </span>
 
@@ -77,7 +79,7 @@ export function Leaderboard({ players, uid, registerRef, compact = false }) {
               initial={{ scale: player.score > 0 ? 1.3 : 1 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              className="font-black text-sm text-purple-100 tabular-nums min-w-[2.5rem] text-left"
+              className="font-black text-sm text-purple-900 dark:text-purple-100 tabular-nums min-w-[2.5rem] text-left"
             >
               <OdometerScore value={player.score} />
             </motion.div>

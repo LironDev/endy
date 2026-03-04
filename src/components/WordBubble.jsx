@@ -9,7 +9,6 @@ import { bubbleEnterVariants, bubbleGlowVariants, lastLetterPulse } from '../ani
 export function WordBubble({ word, compact = false }) {
   const requiredStart = word ? getRequiredStart(word) : null;
 
-  // Sizes: compact fits in the footer above the keyboard
   const bubbleSize = compact
     ? 'w-28 h-28'
     : 'w-44 h-44 sm:w-52 sm:h-52';
@@ -29,7 +28,7 @@ export function WordBubble({ word, compact = false }) {
         <motion.div
           variants={bubbleGlowVariants}
           animate="animate"
-          className="absolute inset-0 rounded-full bg-purple-500/20 blur-2xl"
+          className="absolute inset-0 rounded-full bg-purple-500/10 dark:bg-purple-500/20 blur-2xl"
           style={{ margin: compact ? '-8px' : '-16px' }}
           aria-hidden
         />
@@ -45,7 +44,7 @@ export function WordBubble({ word, compact = false }) {
               className="text-center px-2"
             >
               {word ? (
-                <span className={`text-white ${wordTextSize} leading-tight break-all`}>
+                <span className={`text-purple-900 dark:text-white ${wordTextSize} leading-tight break-all`}>
                   {word}
                 </span>
               ) : (
@@ -68,13 +67,15 @@ export function WordBubble({ word, compact = false }) {
             exit={{ opacity: 0, scale: 0.7 }}
             className={`flex flex-col items-center ${compact ? 'gap-0.5' : 'gap-1'}`}
           >
-            <span className="text-purple-400/60 text-xs">
+            <span className="text-purple-600/70 dark:text-purple-400/60 text-xs">
               {compact ? 'הבא:' : 'האות הבאה'}
             </span>
             <motion.div
               variants={lastLetterPulse}
               animate="animate"
-              className={`${badgeSize} rounded-full bg-purple-900/80 border-2 border-purple-400 flex items-center justify-center font-black text-purple-100`}
+              className={`${badgeSize} rounded-full flex items-center justify-center font-black
+                          bg-purple-100 border-2 border-purple-500 text-purple-800
+                          dark:bg-purple-900/80 dark:border-purple-400 dark:text-purple-100`}
             >
               {requiredStart}
             </motion.div>
@@ -85,7 +86,7 @@ export function WordBubble({ word, compact = false }) {
               key="start"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-purple-400/50 text-xs text-center"
+              className="text-purple-500/60 dark:text-purple-400/50 text-xs text-center"
             >
               הזינו מילה ראשונה
             </motion.div>

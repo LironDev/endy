@@ -41,8 +41,6 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
 
   const handleConfigChange = (key, value) => {
     setConfig(prev => ({ ...prev, [key]: value }));
-    // Note: in a full implementation, persist config changes to Firestore here
-    // For now, host's local config is used at game start
   };
 
   return (
@@ -54,8 +52,8 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
         animate={{ opacity: 1, y: 0 }}
         className="text-center"
       >
-        <h1 className="text-3xl font-black neon-text text-white">אנדי</h1>
-        <p className="text-purple-400/60 text-sm mt-1">ממתינים לשחקנים...</p>
+        <h1 className="text-3xl font-black neon-text text-purple-900 dark:text-white">אנדי</h1>
+        <p className="text-purple-600/70 dark:text-purple-400/60 text-sm mt-1">ממתינים לשחקנים...</p>
       </motion.div>
 
       {/* Game Code */}
@@ -75,7 +73,7 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
         transition={{ delay: 0.2 }}
         className="w-full max-w-sm glass-card"
       >
-        <h2 className="text-purple-300/70 text-sm mb-3 font-semibold">
+        <h2 className="text-purple-600/80 dark:text-purple-300/70 text-sm mb-3 font-semibold">
           שחקנים ({players.length})
         </h2>
 
@@ -90,13 +88,15 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
                 exit="exit"
                 layout
                 className={`flex items-center gap-3 p-2.5 rounded-xl ${
-                  playerId === uid ? 'bg-purple-700/30 border border-purple-500/30' : 'bg-purple-950/40'
+                  playerId === uid
+                    ? 'bg-purple-100/80 border border-purple-300/50 dark:bg-purple-700/30 dark:border-purple-500/30'
+                    : 'bg-white/60 dark:bg-purple-950/40'
                 }`}
               >
                 <PlayerAvatar name={player.name} size="md" isOnline={player.isOnline} isHost={player.isHost} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-purple-100 font-semibold text-sm truncate">{player.name}</p>
-                  <p className="text-purple-400/50 text-xs">
+                  <p className="text-purple-900 dark:text-purple-100 font-semibold text-sm truncate">{player.name}</p>
+                  <p className="text-purple-500/60 dark:text-purple-400/50 text-xs">
                     {player.isHost ? 'מארח' : 'שחקן'}
                     {playerId === uid ? ' • את/ה' : ''}
                   </p>
@@ -118,12 +118,12 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
           transition={{ delay: 0.3 }}
           className="w-full max-w-sm glass-card"
         >
-          <h2 className="text-purple-300/70 text-sm mb-4 font-semibold">הגדרות משחק</h2>
+          <h2 className="text-purple-600/80 dark:text-purple-300/70 text-sm mb-4 font-semibold">הגדרות משחק</h2>
 
           {/* Mode toggle */}
           <div className="mb-4">
-            <label className="text-purple-400/70 text-xs mb-2 block">מצב משחק</label>
-            <div className="flex gap-1 bg-purple-950/60 rounded-xl p-1">
+            <label className="text-purple-600/80 dark:text-purple-400/70 text-xs mb-2 block">מצב משחק</label>
+            <div className="flex gap-1 bg-purple-100/70 dark:bg-purple-950/60 rounded-xl p-1">
               {[
                 { id: GAME_MODES.CLASSIC, label: '🎯 קלאסי', desc: 'תורות לסירוגין' },
                 { id: GAME_MODES.BLITZ, label: '⚡ בליץ', desc: 'כולם בו-זמנית' },
@@ -134,7 +134,7 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
                   className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
                     config.mode === mode.id
                       ? 'bg-purple-600 text-white'
-                      : 'text-purple-400 hover:text-purple-300'
+                      : 'text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300'
                   }`}
                   title={mode.desc}
                 >
@@ -142,14 +142,14 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
                 </button>
               ))}
             </div>
-            <p className="text-purple-500/50 text-xs mt-1 text-center">
+            <p className="text-purple-500/60 dark:text-purple-500/50 text-xs mt-1 text-center">
               {config.mode === GAME_MODES.CLASSIC ? 'כל שחקן מחכה לתורו' : 'כולם יכולים לשלוח (לא אחד אחרי עצמו)'}
             </p>
           </div>
 
           {/* Score target */}
           <div className="mb-4">
-            <label className="text-purple-400/70 text-xs mb-2 block">יעד ניקוד (נקודות)</label>
+            <label className="text-purple-600/80 dark:text-purple-400/70 text-xs mb-2 block">יעד ניקוד (נקודות)</label>
             <div className="grid grid-cols-4 gap-1.5">
               {TARGET_OPTIONS.map(t => (
                 <button
@@ -158,7 +158,7 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
                   className={`py-2 rounded-lg text-sm font-bold transition-all ${
                     config.target === t
                       ? 'bg-purple-600 text-white'
-                      : 'bg-purple-950/60 text-purple-400 hover:text-purple-300 border border-purple-800/40'
+                      : 'bg-purple-100/70 text-purple-600 hover:text-purple-700 border border-purple-200/60 dark:bg-purple-950/60 dark:text-purple-400 dark:hover:text-purple-300 dark:border-purple-800/40'
                   }`}
                 >
                   {t}
@@ -169,7 +169,7 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
 
           {/* Time limit */}
           <div className="mb-1">
-            <label className="text-purple-400/70 text-xs mb-2 block">הגבלת זמן</label>
+            <label className="text-purple-600/80 dark:text-purple-400/70 text-xs mb-2 block">הגבלת זמן</label>
             <div className="flex flex-wrap gap-1.5">
               {TIME_OPTIONS.map(opt => (
                 <button
@@ -178,7 +178,7 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                     config.timeLimit === opt.value
                       ? 'bg-purple-600 text-white'
-                      : 'bg-purple-950/60 text-purple-400 hover:text-purple-300 border border-purple-800/40'
+                      : 'bg-purple-100/70 text-purple-600 hover:text-purple-700 border border-purple-200/60 dark:bg-purple-950/60 dark:text-purple-400 dark:hover:text-purple-300 dark:border-purple-800/40'
                   }`}
                 >
                   {opt.label}
@@ -195,7 +195,7 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-purple-400/60 text-sm animate-pulse"
+          className="text-purple-600/70 dark:text-purple-400/60 text-sm animate-pulse"
         >
           ממתין/ת למארח להתחיל את המשחק...
         </motion.p>
@@ -220,7 +220,7 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
 
         <button
           onClick={onLeave}
-          className="w-full py-2.5 rounded-xl text-purple-500/70 text-sm hover:text-purple-400 transition"
+          className="w-full py-2.5 rounded-xl text-purple-500/70 text-sm hover:text-purple-600 dark:hover:text-purple-400 transition"
         >
           ← חזור לדף הבית
         </button>

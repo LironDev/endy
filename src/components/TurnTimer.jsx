@@ -18,7 +18,7 @@ export function TurnTimer({ timeLeft }) {
   const strokeOffset = CIRCUMFERENCE * (1 - fraction);
 
   const ringColor = isUrgent ? '#ef4444' : '#a855f7';
-  const textColor = isUrgent ? 'text-red-400' : 'text-purple-300';
+  const textColor = isUrgent ? 'text-red-500 dark:text-red-400' : 'text-purple-700 dark:text-purple-300';
 
   return (
     <div className="relative flex items-center justify-center" style={{ width: 46, height: 46 }}>

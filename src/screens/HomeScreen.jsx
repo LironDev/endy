@@ -20,7 +20,7 @@ function CosmicStars() {
       {stars.map(star => (
         <motion.div
           key={star.id}
-          className="absolute rounded-full bg-purple-300/50"
+          className="absolute rounded-full bg-purple-500/25 dark:bg-purple-300/50"
           style={{ left: `${star.x}%`, top: `${star.y}%`, width: star.size, height: star.size }}
           animate={{ y: [-12, 12], opacity: [0.2, 0.8, 0.2] }}
           transition={{ duration: star.duration, repeat: Infinity, delay: star.delay }}
@@ -88,10 +88,10 @@ export function HomeScreen({ onCreateGame, onJoinGame }) {
         <div className="flex justify-center mb-3">
           <AppLogo size={72} />
         </div>
-        <h1 className="text-7xl sm:text-8xl font-black neon-text text-white leading-none mb-2">
+        <h1 className="text-7xl sm:text-8xl font-black neon-text text-purple-900 dark:text-white leading-none mb-2">
           אנדי
         </h1>
-        <p className="text-purple-300/60 text-base tracking-wide">
+        <p className="text-purple-600/70 dark:text-purple-300/60 text-base tracking-wide">
           שרשרת מילים עברית • מרובה שחקנים
         </p>
       </motion.div>
@@ -105,7 +105,7 @@ export function HomeScreen({ onCreateGame, onJoinGame }) {
       >
         {/* Name input */}
         <div className="mb-5">
-          <label className="block text-purple-300/70 text-sm mb-1.5">השם שלך</label>
+          <label className="block text-purple-600/80 dark:text-purple-300/70 text-sm mb-1.5">השם שלך</label>
           <input
             type="text"
             value={name}
@@ -118,15 +118,15 @@ export function HomeScreen({ onCreateGame, onJoinGame }) {
         </div>
 
         {/* Tab buttons */}
-        <div className="flex gap-1 mb-5 bg-purple-950/60 rounded-xl p-1">
+        <div className="flex gap-1 mb-5 bg-purple-100/70 dark:bg-purple-950/60 rounded-xl p-1">
           {[{ id: 'create', label: '✨ צור משחק' }, { id: 'join', label: '🎮 הצטרף' }].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
                 activeTab === tab.id
-                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/50'
-                  : 'text-purple-400 hover:text-purple-300'
+                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
+                  : 'text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300'
               }`}
             >
               {tab.label}
@@ -155,7 +155,7 @@ export function HomeScreen({ onCreateGame, onJoinGame }) {
                 'צור משחק חדש'
               )}
             </button>
-            <p className="text-purple-400/50 text-xs text-center mt-3">
+            <p className="text-purple-500/60 dark:text-purple-400/50 text-xs text-center mt-3">
               תהיה/י המארח/ת ותוכל/י להגדיר את חוקי המשחק
             </p>
           </motion.div>
@@ -165,7 +165,7 @@ export function HomeScreen({ onCreateGame, onJoinGame }) {
         {activeTab === 'join' && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-3">
             <div>
-              <label className="block text-purple-300/70 text-sm mb-1.5">קוד משחק</label>
+              <label className="block text-purple-600/80 dark:text-purple-300/70 text-sm mb-1.5">קוד משחק</label>
               <input
                 type="text"
                 dir="ltr"
@@ -191,7 +191,7 @@ export function HomeScreen({ onCreateGame, onJoinGame }) {
                 autoCapitalize="characters"
                 spellCheck={false}
               />
-              <p className="text-purple-400/40 text-xs text-center mt-1">
+              <p className="text-purple-500/50 dark:text-purple-400/40 text-xs text-center mt-1">
                 אפשר גם להדביק את הקישור כולו
               </p>
             </div>
@@ -207,7 +207,7 @@ export function HomeScreen({ onCreateGame, onJoinGame }) {
       </motion.div>
 
       {/* Version footer */}
-      <p className="absolute bottom-4 text-purple-700/40 text-xs z-10">אנדי v1.0</p>
+      <p className="absolute bottom-4 text-purple-400/50 dark:text-purple-700/40 text-xs z-10">אנדי v1.0</p>
     </div>
   );
 }

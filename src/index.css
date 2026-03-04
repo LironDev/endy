@@ -1,14 +1,29 @@
 @import "tailwindcss";
 
-/* ── CSS Custom Properties ──────────────────────────────────────────────── */
+/* ── Enable class-based dark mode for Tailwind v4 ───────────────────────── */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── CSS Custom Properties — Light theme (default) ──────────────────────── */
 
 :root {
-  --bg-deep: #0f0020;
-  --bg-surface: #1a0533;
-  --neon-purple: #a855f7;
-  --neon-pink: #ec4899;
+  --bg-deep:      #f5f0ff;
+  --bg-surface:   #fdfaff;
+  --neon-purple:  #7c3aed;
+  --neon-pink:    #db2777;
+  --text-primary: #1a003d;
+  --text-muted:   rgba(109, 40, 217, 0.5);
+}
+
+/* ── Dark theme overrides ────────────────────────────────────────────────── */
+
+.dark {
+  --bg-deep:      #0f0020;
+  --bg-surface:   #1a0533;
+  --neon-purple:  #a855f7;
+  --neon-pink:    #ec4899;
   --text-primary: #e9d5ff;
-  --text-muted: rgba(168, 85, 247, 0.5);
+  --text-muted:   rgba(168, 85, 247, 0.5);
 }
 
 /* ── Global Reset ───────────────────────────────────────────────────────── */
@@ -30,9 +45,18 @@ html, body, #root {
 
 body { direction: rtl; }
 
-/* ── Cosmic Background ──────────────────────────────────────────────────── */
+/* ── Cosmic Background — Light ──────────────────────────────────────────── */
 
 .cosmic-bg {
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 40%, rgba(168,85,247,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 50% at 85% 20%, rgba(236,72,153,0.04) 0%, transparent 55%),
+    linear-gradient(180deg, #f5f0ff 0%, #ede4ff 50%, #f2ebff 100%);
+}
+
+/* ── Cosmic Background — Dark ───────────────────────────────────────────── */
+
+.dark .cosmic-bg {
   background:
     radial-gradient(ellipse 80% 60% at 15% 40%, rgba(168,85,247,0.12) 0%, transparent 65%),
     radial-gradient(ellipse 60% 50% at 85% 20%, rgba(236,72,153,0.08) 0%, transparent 55%),
@@ -51,46 +75,71 @@ body { direction: rtl; }
   position: relative;
 }
 
-/* ── Word Bubble ────────────────────────────────────────────────────────── */
+/* ── Word Bubble — Light ────────────────────────────────────────────────── */
 
 .word-bubble {
-  background: radial-gradient(circle at center, rgba(168,85,247,0.18) 0%, rgba(26,5,51,0.92) 70%);
-  border: 1.5px solid rgba(168,85,247,0.45);
-  box-shadow: 0 0 30px rgba(168,85,247,0.25), 0 0 80px rgba(168,85,247,0.08), inset 0 0 30px rgba(168,85,247,0.04);
+  background: radial-gradient(circle at center, rgba(168,85,247,0.10) 0%, rgba(255,255,255,0.97) 70%);
+  border: 1.5px solid rgba(168,85,247,0.35);
+  box-shadow: 0 0 30px rgba(168,85,247,0.12), 0 0 80px rgba(168,85,247,0.04);
   border-radius: 50%;
   position: relative;
 }
 
-/* ── Neon Text Glow ─────────────────────────────────────────────────────── */
+/* ── Word Bubble — Dark ─────────────────────────────────────────────────── */
+
+.dark .word-bubble {
+  background: radial-gradient(circle at center, rgba(168,85,247,0.18) 0%, rgba(26,5,51,0.92) 70%);
+  border: 1.5px solid rgba(168,85,247,0.45);
+  box-shadow: 0 0 30px rgba(168,85,247,0.25), 0 0 80px rgba(168,85,247,0.08), inset 0 0 30px rgba(168,85,247,0.04);
+}
+
+/* ── Neon Text Glow — Light ─────────────────────────────────────────────── */
 
 .neon-text {
+  text-shadow:
+    0 0 10px rgba(124,58,237,0.50),
+    0 0 30px rgba(124,58,237,0.25),
+    0 0 70px rgba(124,58,237,0.15);
+}
+
+/* ── Neon Text Glow — Dark ──────────────────────────────────────────────── */
+
+.dark .neon-text {
   text-shadow:
     0 0 10px rgba(168,85,247,0.8),
     0 0 30px rgba(168,85,247,0.5),
     0 0 70px rgba(168,85,247,0.3);
 }
 
-/* ── Glass Card ─────────────────────────────────────────────────────────── */
+/* ── Glass Card — Light ─────────────────────────────────────────────────── */
 
 .glass-card {
-  background: rgba(26,5,51,0.65);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(168,85,247,0.2);
+  border: 1px solid rgba(168,85,247,0.18);
   border-radius: 20px;
   padding: 20px;
+  box-shadow: 0 8px 32px rgba(168,85,247,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+/* ── Glass Card — Dark ──────────────────────────────────────────────────── */
+
+.dark .glass-card {
+  background: rgba(26,5,51,0.65);
+  border: 1px solid rgba(168,85,247,0.2);
   box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
-/* ── RTL Input ──────────────────────────────────────────────────────────── */
+/* ── RTL Input — Light ──────────────────────────────────────────────────── */
 
 .rtl-input {
   display: block;
   width: 100%;
   direction: rtl;
   text-align: right;
-  background: rgba(168,85,247,0.08);
-  border: 1.5px solid rgba(168,85,247,0.25);
+  background: rgba(168,85,247,0.05);
+  border: 1.5px solid rgba(168,85,247,0.2);
   border-radius: 14px;
   padding: 12px 16px;
   font-size: 1.05rem;
@@ -101,11 +150,11 @@ body { direction: rtl; }
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.rtl-input::placeholder { color: rgba(168,85,247,0.35); }
+.rtl-input::placeholder { color: rgba(124,58,237,0.30); }
 
 .rtl-input:focus {
   border-color: var(--neon-purple);
-  box-shadow: 0 0 0 3px rgba(168,85,247,0.2);
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
 }
 
 .rtl-input:disabled {
@@ -113,7 +162,20 @@ body { direction: rtl; }
   cursor: not-allowed;
 }
 
-/* ── Neon Button ────────────────────────────────────────────────────────── */
+/* ── RTL Input — Dark ───────────────────────────────────────────────────── */
+
+.dark .rtl-input {
+  background: rgba(168,85,247,0.08);
+  border: 1.5px solid rgba(168,85,247,0.25);
+}
+
+.dark .rtl-input::placeholder { color: rgba(168,85,247,0.35); }
+
+.dark .rtl-input:focus {
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.2);
+}
+
+/* ── Neon Button (purple gradient — same on both themes) ────────────────── */
 
 .neon-btn {
   display: inline-flex;

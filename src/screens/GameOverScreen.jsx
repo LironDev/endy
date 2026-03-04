@@ -38,7 +38,6 @@ export function GameOverScreen({ gameDoc, gameId, uid, onHome }) {
       const blob = await generateResultsImage(players, gameId);
       const file = new File([blob], 'endy-results.png', { type: 'image/png' });
 
-      // Try native share (Android Chrome, iOS Safari 15+)
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({
           title: 'תוצאות אנדי 🏆',
@@ -46,7 +45,6 @@ export function GameOverScreen({ gameDoc, gameId, uid, onHome }) {
           files: [file],
         });
       } else {
-        // Fallback: download the image
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -92,12 +90,12 @@ export function GameOverScreen({ gameDoc, gameId, uid, onHome }) {
           {didWin ? '🏆' : '🎮'}
         </motion.div>
 
-        <motion.h1 variants={gameOverItemVariants} className="text-3xl font-black neon-text text-white mb-1">
+        <motion.h1 variants={gameOverItemVariants} className="text-3xl font-black neon-text text-purple-900 dark:text-white mb-1">
           {didWin ? 'ניצחת!' : 'המשחק הסתיים'}
         </motion.h1>
 
         {winner && (
-          <motion.p variants={gameOverItemVariants} className="text-purple-300/70 text-base">
+          <motion.p variants={gameOverItemVariants} className="text-purple-600/80 dark:text-purple-300/70 text-base">
             {didWin
               ? `כל הכבוד! צברת ${winner.score} נקודות`
               : `${winner.name} ניצח/ה עם ${winner.score} נקודות`}
@@ -112,7 +110,7 @@ export function GameOverScreen({ gameDoc, gameId, uid, onHome }) {
         transition={{ delay: 0.3 }}
         className="w-full max-w-sm glass-card"
       >
-        <h2 className="text-purple-300/70 text-sm mb-3 font-semibold">לוח ניקוד סופי</h2>
+        <h2 className="text-purple-600/80 dark:text-purple-300/70 text-sm mb-3 font-semibold">לוח ניקוד סופי</h2>
 
         {/* Top 3 podium */}
         {players.length >= 2 && (
@@ -127,10 +125,14 @@ export function GameOverScreen({ gameDoc, gameId, uid, onHome }) {
               >
                 <span className="text-2xl">{MEDALS[idx]}</span>
                 <PlayerAvatar name={player.name} size={idx === 0 ? 'lg' : 'md'} isHost={player.isHost} />
-                <span className={`text-xs font-semibold ${player.id === uid ? 'text-purple-200' : 'text-purple-300/70'} max-w-[60px] truncate text-center`}>
+                <span className={`text-xs font-semibold max-w-[60px] truncate text-center ${
+                  player.id === uid
+                    ? 'text-purple-700 dark:text-purple-200'
+                    : 'text-purple-600/80 dark:text-purple-300/70'
+                }`}>
                   {player.name}
                 </span>
-                <span className="text-purple-400 font-black text-sm">{player.score}</span>
+                <span className="text-purple-600 dark:text-purple-400 font-black text-sm">{player.score}</span>
               </motion.div>
             ))}
           </div>
@@ -162,16 +164,18 @@ export function GameOverScreen({ gameDoc, gameId, uid, onHome }) {
         )}
 
         {!isHost && (
-          <p className="text-center text-purple-400/60 text-sm animate-pulse">
+          <p className="text-center text-purple-600/70 dark:text-purple-400/60 text-sm animate-pulse">
             ממתין/ת למארח להתחיל סיבוב חדש...
           </p>
         )}
 
-        {/* Share results image — primary share action */}
+        {/* Share results image */}
         <button
           onClick={handleShareImage}
           disabled={sharing}
-          className="w-full py-3.5 rounded-xl bg-purple-700/40 border border-purple-500/50 text-purple-100 text-sm font-semibold hover:bg-purple-700/60 transition flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-3.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition
+                     bg-purple-100/70 border border-purple-300/50 text-purple-800 hover:bg-purple-200/70
+                     dark:bg-purple-700/40 dark:border-purple-500/50 dark:text-purple-100 dark:hover:bg-purple-700/60"
         >
           {sharing
             ? <><span className="animate-spin">⏳</span> יוצר תמונה...</>
@@ -182,14 +186,16 @@ export function GameOverScreen({ gameDoc, gameId, uid, onHome }) {
         {/* Share game link */}
         <button
           onClick={handleShareLink}
-          className="w-full py-2.5 rounded-xl border border-purple-700/30 text-purple-400 text-sm font-medium hover:bg-purple-900/30 transition"
+          className="w-full py-2.5 rounded-xl border text-sm font-medium transition
+                     border-purple-200/60 text-purple-600 hover:bg-purple-100/50
+                     dark:border-purple-700/30 dark:text-purple-400 dark:hover:bg-purple-900/30"
         >
           🔗 שתף קישור למשחק
         </button>
 
         <button
           onClick={onHome}
-          className="w-full py-2.5 rounded-xl text-purple-500/60 text-sm hover:text-purple-400 transition"
+          className="w-full py-2.5 rounded-xl text-purple-500/70 text-sm hover:text-purple-600 dark:hover:text-purple-400 transition"
         >
           ← דף הבית
         </button>

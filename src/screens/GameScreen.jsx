@@ -16,6 +16,7 @@ export function GameScreen({
   gameDoc, gameId, uid, dictionary,
   shaking, isMyTurn, submitWord, skipTurn,
   timeLeft, turnTimeLeft, endGame,
+  toastStyle, toastErrorStyle,
 }) {
   const { particles, spawnParticle, inputRef, registerLeaderboardRef } = useScoreParticle();
   const wordInputRef = useRef(null);
@@ -71,17 +72,17 @@ export function GameScreen({
       spawnParticle(uid, result.score);
       toast.success(`+${result.score} נקודות! 🌟`, {
         duration: 1500,
-        style: { background: '#1a0533', color: '#e9d5ff', border: '1px solid rgba(168,85,247,0.4)', fontSize: '14px' },
+        style: toastStyle,
       });
     } else if (result.error) {
       toast.error(result.error, {
         duration: 2000,
-        style: { background: '#1a0533', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.3)', fontSize: '14px' },
+        style: toastErrorStyle,
       });
     }
 
     return result;
-  }, [submitWord, uid, dictionary, spawnParticle]);
+  }, [submitWord, uid, dictionary, spawnParticle, toastStyle, toastErrorStyle]);
 
   // ── Turn status label ──────────────────────────────────────────────────────
 
@@ -108,7 +109,9 @@ export function GameScreen({
       <header className="flex-shrink-0 px-3 pt-3 pb-1 flex flex-col gap-1">
         <div className="flex items-center justify-between">
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-            isClassic ? 'bg-blue-900/60 text-blue-300' : 'bg-amber-900/60 text-amber-300'
+            isClassic
+              ? 'bg-blue-100/80 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300'
+              : 'bg-amber-100/80 text-amber-700 dark:bg-amber-900/60 dark:text-amber-300'
           }`}>
             {isClassic ? '🎯 קלאסי' : '⚡ בליץ'}
           </span>
@@ -119,14 +122,18 @@ export function GameScreen({
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 4 }}
-              className={`text-sm font-bold ${myTurn ? 'text-purple-200' : 'text-purple-400/70'}`}
+              className={`text-sm font-bold ${
+                myTurn
+                  ? 'text-purple-800 dark:text-purple-200'
+                  : 'text-purple-500/80 dark:text-purple-400/70'
+              }`}
             >
               {getTurnLabel()}
             </motion.span>
           </AnimatePresence>
 
           {gameDoc.config?.target && (
-            <span className="text-xs text-purple-400/50">
+            <span className="text-xs text-purple-500/60 dark:text-purple-400/50">
               יעד: {gameDoc.config.target}
             </span>
           )}
@@ -164,7 +171,7 @@ export function GameScreen({
               key={lastPlayerId}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-purple-400/40 text-xs text-center"
+              className="text-purple-500/50 dark:text-purple-400/40 text-xs text-center"
             >
               {gameDoc.players[lastPlayerId].name}
             </motion.p>

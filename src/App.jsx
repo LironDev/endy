@@ -10,14 +10,8 @@ import { useGame } from './hooks/useGame';
 import { useHebrewDictionary } from './hooks/useHebrewDictionary';
 import { GAME_STATUS } from './utils/constants';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const TOAST_STYLE = {
-  background: '#1a0533',
-  color: '#e9d5ff',
-  border: '1px solid rgba(168,85,247,0.3)',
-  fontFamily: "'Segoe UI', 'Arial Hebrew', Arial, sans-serif",
-  direction: 'rtl',
-};
+import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { ThemeToggle } from './components/ThemeToggle';
 
 function LoadingSpinner() {
   return (
@@ -25,16 +19,39 @@ function LoadingSpinner() {
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-        className="w-10 h-10 border-3 border-purple-800 border-t-purple-400 rounded-full"
+        className="w-10 h-10 border-3 border-purple-300/40 border-t-purple-600 dark:border-purple-800 dark:border-t-purple-400 rounded-full"
       />
     </div>
   );
 }
 
-export default function App() {
+/** Toaster that reads theme and applies matching toast styles */
+function ThemedToaster() {
+  const { isDark } = useTheme();
+  const style = isDark
+    ? {
+        background: '#1a0533',
+        color: '#e9d5ff',
+        border: '1px solid rgba(168,85,247,0.3)',
+        fontFamily: "'Segoe UI', 'Arial Hebrew', Arial, sans-serif",
+        direction: 'rtl',
+      }
+    : {
+        background: '#ffffff',
+        color: '#1a003d',
+        border: '1px solid rgba(124,58,237,0.25)',
+        fontFamily: "'Segoe UI', 'Arial Hebrew', Arial, sans-serif",
+        direction: 'rtl',
+      };
+  return <Toaster position="top-center" toastOptions={{ style }} />;
+}
+
+function AppInner() {
+  const { isDark } = useTheme();
+
   // Always start on HomeScreen (null).
   // HomeScreen reads the ?game= param to pre-fill the join code.
-  // Only set gameId AFTER the user has explicitly joined/created (handleJoinGame / handleCreateGame).
+  // Only set gameId AFTER the user has explicitly joined/created.
   const [gameId, setGameId] = useState(null);
 
   const uid = getCurrentUid();
@@ -79,10 +96,19 @@ export default function App() {
     updateUrl(null);
   }, []);
 
+  // Toast styles for in-game toasts (passed to GameScreen)
+  const toastStyle = isDark
+    ? { background: '#1a0533', color: '#e9d5ff', border: '1px solid rgba(168,85,247,0.4)', fontSize: '14px' }
+    : { background: '#ffffff', color: '#1a003d', border: '1px solid rgba(124,58,237,0.25)', fontSize: '14px' };
+
+  const toastErrorStyle = isDark
+    ? { background: '#1a0533', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.3)', fontSize: '14px' }
+    : { background: '#fff5f5', color: '#991b1b', border: '1px solid rgba(239,68,68,0.25)', fontSize: '14px' };
+
   if (error) {
     return (
       <div className="min-h-screen cosmic-bg flex flex-col items-center justify-center gap-4 p-6" dir="rtl">
-        <p className="text-red-400 text-lg text-center">{error}</p>
+        <p className="text-red-500 dark:text-red-400 text-lg text-center">{error}</p>
         <button onClick={handleHome} className="neon-btn px-6 py-3">
           חזור לדף הבית
         </button>
@@ -104,7 +130,8 @@ export default function App() {
 
   return (
     <>
-      <Toaster position="top-center" toastOptions={{ style: TOAST_STYLE }} />
+      <ThemedToaster />
+      <ThemeToggle />
 
       <AnimatePresence mode="wait">
         {screen === 'home' && (
@@ -133,6 +160,8 @@ export default function App() {
               timeLeft={timeLeft}
               turnTimeLeft={turnTimeLeft}
               endGame={endGame}
+              toastStyle={toastStyle}
+              toastErrorStyle={toastErrorStyle}
             />
           </motion.div>
         )}
@@ -144,5 +173,13 @@ export default function App() {
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppInner />
+    </ThemeProvider>
   );
 }

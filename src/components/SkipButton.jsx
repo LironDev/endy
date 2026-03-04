@@ -20,8 +20,8 @@ export function SkipButton({ onSkip, isMyTurn, disabled }) {
       whileTap={isDisabled ? {} : { scale: 0.93 }}
       className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
         isDisabled
-          ? 'text-purple-600/40 cursor-not-allowed'
-          : 'text-purple-300/80 hover:text-purple-200 hover:bg-purple-800/30'
+          ? 'text-purple-400/50 dark:text-purple-600/40 cursor-not-allowed'
+          : 'text-purple-700/80 hover:text-purple-800 hover:bg-purple-100/50 dark:text-purple-300/80 dark:hover:text-purple-200 dark:hover:bg-purple-800/30'
       }`}
       title="דלג על תורך"
     >

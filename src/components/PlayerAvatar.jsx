@@ -36,13 +36,13 @@ export function PlayerAvatar({ name, size = 'md', isOnline = false, isHost = fal
         {getInitials(name)}
       </div>
 
-      {/* Online indicator */}
+      {/* Online indicator — border color adapts to theme via CSS variable */}
       {isOnline !== undefined && (
         <motion.span
           animate={isOnline ? { scale: [1, 1.3, 1], opacity: 1 } : { opacity: 0.4 }}
           transition={{ duration: 2, repeat: isOnline ? Infinity : 0 }}
-          className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-[#1a0533] ${
-            isOnline ? 'bg-emerald-400' : 'bg-gray-500'
+          className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-[var(--bg-surface)] ${
+            isOnline ? 'bg-emerald-400' : 'bg-gray-400'
           }`}
         />
       )}
