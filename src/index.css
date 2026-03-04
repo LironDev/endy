@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+/* ── CSS Custom Properties ──────────────────────────────────────────────── */
+
+:root {
+  --bg-deep: #0f0020;
+  --bg-surface: #1a0533;
+  --neon-purple: #a855f7;
+  --neon-pink: #ec4899;
+  --text-primary: #e9d5ff;
+  --text-muted: rgba(168, 85, 247, 0.5);
+}
+
+/* ── Global Reset ───────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'Segoe UI', 'Arial Hebrew', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+body { direction: rtl; }
+
+/* ── Cosmic Background ──────────────────────────────────────────────────── */
+
+.cosmic-bg {
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 40%, rgba(168,85,247,0.12) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 50% at 85% 20%, rgba(236,72,153,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 50% 90%, rgba(99,102,241,0.07) 0%, transparent 50%),
+    linear-gradient(180deg, #0f0020 0%, #12002a 50%, #0f0020 100%);
+}
+
+/* ── Game Screen Layout (100dvh, no scroll) ─────────────────────────────── */
+
+.game-screen {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  position: relative;
+}
+
+/* ── Word Bubble ────────────────────────────────────────────────────────── */
+
+.word-bubble {
+  background: radial-gradient(circle at center, rgba(168,85,247,0.18) 0%, rgba(26,5,51,0.92) 70%);
+  border: 1.5px solid rgba(168,85,247,0.45);
+  box-shadow: 0 0 30px rgba(168,85,247,0.25), 0 0 80px rgba(168,85,247,0.08), inset 0 0 30px rgba(168,85,247,0.04);
+  border-radius: 50%;
+  position: relative;
+}
+
+/* ── Neon Text Glow ─────────────────────────────────────────────────────── */
+
+.neon-text {
+  text-shadow:
+    0 0 10px rgba(168,85,247,0.8),
+    0 0 30px rgba(168,85,247,0.5),
+    0 0 70px rgba(168,85,247,0.3);
+}
+
+/* ── Glass Card ─────────────────────────────────────────────────────────── */
+
+.glass-card {
+  background: rgba(26,5,51,0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(168,85,247,0.2);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* ── RTL Input ──────────────────────────────────────────────────────────── */
+
+.rtl-input {
+  display: block;
+  width: 100%;
+  direction: rtl;
+  text-align: right;
+  background: rgba(168,85,247,0.08);
+  border: 1.5px solid rgba(168,85,247,0.25);
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  outline: none;
+  caret-color: var(--neon-purple);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.rtl-input::placeholder { color: rgba(168,85,247,0.35); }
+
+.rtl-input:focus {
+  border-color: var(--neon-purple);
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.2);
+}
+
+.rtl-input:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Neon Button ────────────────────────────────────────────────────────── */
+
+.neon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #fff;
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #7c3aed 100%);
+  border: 1px solid rgba(168,85,247,0.5);
+  box-shadow: 0 4px 24px rgba(168,85,247,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+  user-select: none;
+}
+
+.neon-btn:hover:not(:disabled) {
+  box-shadow: 0 6px 32px rgba(168,85,247,0.55), inset 0 1px 0 rgba(255,255,255,0.15);
+  transform: translateY(-1px);
+}
+
+.neon-btn:active:not(:disabled) { transform: translateY(0) scale(0.97); }
+.neon-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+/* ── Submit Button ──────────────────────────────────────────────────────── */
+
+.submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border: 1px solid rgba(168,85,247,0.5);
+  box-shadow: 0 4px 16px rgba(168,85,247,0.3);
+  color: white;
+  cursor: pointer;
+  transition: all 0.18s;
+  outline: none;
+  font-family: inherit;
+}
+
+.submit-btn:hover:not(:disabled) { box-shadow: 0 4px 24px rgba(168,85,247,0.5); }
+.submit-btn:active:not(:disabled) { transform: scale(0.94); }
+.submit-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(168,85,247,0.3); border-radius: 4px; }
+
+/* ── iOS safe area ──────────────────────────────────────────────────────── */
+
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* ── Utility ────────────────────────────────────────────────────────────── */
+
+.border-3 { border-width: 3px; }
