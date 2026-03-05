@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { WordBubble } from '../components/WordBubble';
 import { WordInput } from '../components/WordInput';
+import { HebrewKeyboard } from '../components/HebrewKeyboard';
 import { Leaderboard } from '../components/Leaderboard';
 import { PlayerAvatar } from '../components/PlayerAvatar';
 import { ScoreParticleLayer } from '../components/ScoreParticle';
@@ -43,7 +44,7 @@ export function GameScreen({
     };
   }, [gameId, uid]);
 
-  // ── Auto-focus input on my turn ────────────────────────────────────────────
+  // ── Focus hidden input when it becomes my turn ─────────────────────────────
 
   useEffect(() => {
     if (myTurn) {
@@ -74,15 +75,9 @@ export function GameScreen({
 
     if (result.success) {
       spawnParticle(uid, result.score);
-      toast.success(`+${result.score} נקודות! 🌟`, {
-        duration: 1500,
-        style: toastStyle,
-      });
+      toast.success(`+${result.score} נקודות! 🌟`, { duration: 1500, style: toastStyle });
     } else if (result.error) {
-      toast.error(result.error, {
-        duration: 2000,
-        style: toastErrorStyle,
-      });
+      toast.error(result.error, { duration: 2000, style: toastErrorStyle });
     }
 
     return result;
@@ -94,7 +89,6 @@ export function GameScreen({
     setResetting(true);
     try {
       await resetGame(gameId, uid);
-      // onSnapshot will switch App to LobbyScreen automatically
     } catch (e) {
       toast.error(e.message, { style: toastErrorStyle });
       setResetting(false);
@@ -115,6 +109,10 @@ export function GameScreen({
     return 'שחק/י!';
   };
 
+  // ── Keyboard disabled when not my turn or game not running ────────────────
+
+  const kbDisabled = !myTurn || gameDoc.status !== 'playing';
+
   return (
     <div
       className="cosmic-bg flex flex-col overflow-hidden"
@@ -123,7 +121,7 @@ export function GameScreen({
     >
       <ScoreParticleLayer particles={particles} />
 
-      {/* ── Reset to lobby confirmation modal ──────────────────────────────── */}
+      {/* ── Reset confirmation modal ─────────────────────────────────────── */}
       <AnimatePresence>
         {showResetConfirm && (
           <motion.div
@@ -144,38 +142,25 @@ export function GameScreen({
               onClick={e => e.stopPropagation()}
               dir="rtl"
             >
-              {/* Title */}
               <div className="text-center mb-4">
                 <motion.div
                   className="text-4xl mb-2"
                   animate={{ rotate: [0, -10, 10, -6, 6, 0] }}
                   transition={{ duration: 0.6, delay: 0.2 }}
-                >
-                  🏠
-                </motion.div>
-                <h2 className="text-purple-900 dark:text-white font-black text-lg mb-1.5">
-                  חזרה ללובי?
-                </h2>
+                >🏠</motion.div>
+                <h2 className="text-purple-900 dark:text-white font-black text-lg mb-1.5">חזרה ללובי?</h2>
                 <p className="text-purple-600/70 dark:text-purple-400/60 text-sm leading-relaxed">
                   הניקוד יתאפס לכולם. השחקנים יישארו בחדר ויוכלו להצטרף גם אחרים.
                 </p>
               </div>
 
-              {/* Current players */}
               <div className="bg-purple-100/50 dark:bg-purple-950/50 rounded-xl p-3 mb-4">
-                <p className="text-purple-500/70 dark:text-purple-400/60 text-xs mb-2.5 font-semibold">
-                  שחקנים בחדר:
-                </p>
+                <p className="text-purple-500/70 dark:text-purple-400/60 text-xs mb-2.5 font-semibold">שחקנים בחדר:</p>
                 <div className="flex flex-wrap gap-x-3 gap-y-2">
                   {Object.entries(gameDoc.players || {}).map(([pid, player]) => (
                     <div key={pid} className="flex items-center gap-1.5">
-                      <PlayerAvatar
-                        name={player.name}
-                        size="xs"
-                        isOnline={player.isOnline}
-                        emoji={player.emoji || null}
-                        avatarColor={player.avatarColor || null}
-                      />
+                      <PlayerAvatar name={player.name} size="xs" isOnline={player.isOnline}
+                        emoji={player.emoji || null} avatarColor={player.avatarColor || null} />
                       <span className="text-purple-700 dark:text-purple-300 text-xs font-medium">
                         {player.name}
                         {pid === uid && <span className="text-purple-400/60 dark:text-purple-500/50 mr-1">(את/ה)</span>}
@@ -185,27 +170,17 @@ export function GameScreen({
                 </div>
               </div>
 
-              {/* Buttons */}
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowResetConfirm(false)}
                   disabled={resetting}
-                  className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all
-                             text-purple-600 dark:text-purple-400
-                             bg-purple-100/70 dark:bg-purple-950/60
-                             hover:bg-purple-200/70 dark:hover:bg-purple-900/60
-                             disabled:opacity-40"
-                >
-                  ביטול
-                </button>
+                  className="flex-1 py-3 rounded-xl text-sm font-semibold text-purple-600 dark:text-purple-400 bg-purple-100/70 dark:bg-purple-950/60 hover:bg-purple-200/70 disabled:opacity-40 transition-all"
+                >ביטול</button>
                 <motion.button
                   onClick={handleResetToLobby}
                   disabled={resetting}
                   whileTap={{ scale: 0.95 }}
-                  className="flex-1 py-3 rounded-xl text-sm font-semibold text-white transition-all
-                             bg-purple-600 hover:bg-purple-700
-                             shadow-lg shadow-purple-500/30
-                             disabled:opacity-50"
+                  className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 shadow-lg shadow-purple-500/30 disabled:opacity-50"
                 >
                   {resetting ? (
                     <span className="flex items-center justify-center gap-1.5">
@@ -224,11 +199,10 @@ export function GameScreen({
         )}
       </AnimatePresence>
 
-      {/* ── TOP: Header ─────────────────────────────────────────────────── */}
+      {/* ── HEADER ──────────────────────────────────────────────────────────── */}
       <header className="flex-shrink-0 px-3 pt-3 pb-1 flex flex-col gap-1">
         <div className="flex items-center justify-between">
-
-          {/* Left: mode badge + host home button */}
+          {/* Left: home button + mode badge */}
           <div className="flex items-center gap-1.5">
             {isHost && (
               <motion.button
@@ -238,9 +212,7 @@ export function GameScreen({
                 className="w-7 h-7 rounded-lg flex items-center justify-center text-base
                            text-purple-400/70 hover:text-purple-600 dark:hover:text-purple-300
                            hover:bg-purple-100/60 dark:hover:bg-purple-800/40 transition-all"
-              >
-                🏠
-              </motion.button>
+              >🏠</motion.button>
             )}
             <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
               isClassic
@@ -251,6 +223,7 @@ export function GameScreen({
             </span>
           </div>
 
+          {/* Centre: turn label */}
           <AnimatePresence mode="wait">
             <motion.span
               key={getTurnLabel()}
@@ -258,15 +231,14 @@ export function GameScreen({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 4 }}
               className={`text-sm font-bold ${
-                myTurn
-                  ? 'text-purple-800 dark:text-purple-200'
-                  : 'text-purple-500/80 dark:text-purple-400/70'
+                myTurn ? 'text-purple-800 dark:text-purple-200' : 'text-purple-500/80 dark:text-purple-400/70'
               }`}
             >
               {getTurnLabel()}
             </motion.span>
           </AnimatePresence>
 
+          {/* Right: score target */}
           {gameDoc.config?.target && (
             <span className="text-xs text-purple-500/60 dark:text-purple-400/50">
               יעד: {gameDoc.config.target}
@@ -274,13 +246,11 @@ export function GameScreen({
           )}
         </div>
 
-        {timeLimit && (
-          <TimerBar timeLeft={timeLeft} totalTime={timeLimit} />
-        )}
+        {timeLimit && <TimerBar timeLeft={timeLeft} totalTime={timeLimit} />}
       </header>
 
-      {/* ── TOP: Leaderboard (always visible, even with keyboard open) ────── */}
-      <section className="flex-shrink-0 px-3 pb-1 overflow-y-auto" style={{ maxHeight: '28vh' }}>
+      {/* ── LEADERBOARD — fills all available space ──────────────────────── */}
+      <section className="flex-1 min-h-0 overflow-y-auto px-3 py-1">
         <Leaderboard
           players={gameDoc.players || {}}
           uid={uid}
@@ -290,57 +260,55 @@ export function GameScreen({
         />
       </section>
 
-      {/* ── MIDDLE: flexible spacer (collapses when keyboard opens) ─────── */}
-      <div className="flex-1 min-h-0" />
+      {/* ── BOTTOM — always pinned above keyboard ────────────────────────── */}
+      <div className="flex-shrink-0">
 
-      {/* ── BOTTOM: Word display + input (stays visible above keyboard) ──── */}
-      <footer className="flex-shrink-0 px-3 pt-1 pb-safe flex flex-col gap-2"
-        style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
-      >
-        {/* Word bubble — compact version, right above the input */}
-        <div className="flex flex-col items-center gap-1">
+        {/* Word bubble + last player name */}
+        <div className="px-3 pt-1 flex flex-col items-center gap-0.5">
           <WordBubble word={currentWord} compact />
-
-          {/* Last submitted by */}
           {lastPlayerId && gameDoc.players?.[lastPlayerId] && (
             <motion.p
               key={lastPlayerId}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-purple-500/50 dark:text-purple-400/40 text-xs text-center"
+              className="text-purple-500/50 dark:text-purple-400/40 text-xs"
             >
               {gameDoc.players[lastPlayerId].name}
             </motion.p>
           )}
         </div>
 
-        {/* Turn timer + skip row */}
-        <div className="flex items-center justify-between gap-2">
-          {/* Turn timer always shown on the left */}
+        {/* Turn timer + skip */}
+        <div className="px-3 py-1 flex items-center justify-between gap-2">
           <TurnTimer timeLeft={turnTimeLeft} />
-
-          {/* Skip button on the right (Classic only) */}
           {isClassic ? (
-            <SkipButton
-              onSkip={() => skipTurn(uid)}
-              isMyTurn={myTurn}
-              disabled={false}
-            />
+            <SkipButton onSkip={() => skipTurn(uid)} isMyTurn={myTurn} disabled={false} />
           ) : (
-            <div /> /* spacer in Blitz */
+            <div />
           )}
         </div>
 
-        {/* Word input */}
-        <WordInput
-          ref={wordInputRef}
-          inputRef={inputRef}
-          onSubmit={handleSubmit}
-          isMyTurn={myTurn}
-          disabled={gameDoc.status !== 'playing'}
-          placeholder={currentWord ? `מילה שמתחילה ב...` : 'הזינו כל מילה...'}
+        {/* Typed word display */}
+        <div className="px-3 pb-1">
+          <WordInput
+            ref={wordInputRef}
+            inputRef={inputRef}
+            onSubmit={handleSubmit}
+            isMyTurn={myTurn}
+            disabled={gameDoc.status !== 'playing'}
+            placeholder={currentWord ? 'מילה שמתחילה ב...' : 'הזינו כל מילה...'}
+          />
+        </div>
+
+        {/* Hebrew on-screen keyboard */}
+        <HebrewKeyboard
+          onKey={char => wordInputRef.current?.addChar(char)}
+          onDelete={() => wordInputRef.current?.deleteChar()}
+          onSpace={() => wordInputRef.current?.addChar(' ')}
+          onSubmit={() => wordInputRef.current?.submit()}
+          disabled={kbDisabled}
         />
-      </footer>
+      </div>
     </div>
   );
 }
