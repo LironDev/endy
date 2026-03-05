@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { PlayerAvatar } from '../components/PlayerAvatar';
@@ -7,6 +7,14 @@ import { GameCodeDisplay } from '../components/GameCodeDisplay';
 import { playerJoinVariants } from '../animations/variants';
 import { startGame, resetGame } from '../firebase/gameService';
 import { GAME_MODES } from '../utils/constants';
+
+const TIPS = [
+  { icon: '🔤', text: 'כל שחקן מזין מילה שמתחילה באות האחרונה של המילה הקודמת' },
+  { icon: '🏆', text: 'ניקוד לפי אורך המילה — מילים ארוכות שוות יותר נקודות' },
+  { icon: '🎯', text: 'קלאסי: תורות לסירוגין — כל שחקן ממתין לתורו' },
+  { icon: '⚡', text: 'בזק: כולם מתחרים בו-זמנית — הכי מהיר מנצח' },
+  { icon: '🚫', text: 'אין להשתמש באותה מילה פעמיים' },
+];
 
 const TARGET_OPTIONS = [30, 50, 100, 200];
 const TIME_OPTIONS = [
@@ -20,6 +28,12 @@ const TIME_OPTIONS = [
 export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
   const [starting, setStarting] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [tipIndex, setTipIndex] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setTipIndex(i => (i + 1) % TIPS.length), 2000);
+    return () => clearInterval(id);
+  }, []);
   const [config, setConfig] = useState({
     mode: gameDoc.config?.mode || GAME_MODES.CLASSIC,
     target: gameDoc.config?.target || 50,
@@ -144,28 +158,35 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
         className="w-full max-w-sm glass-card"
       >
         <h2 className="text-purple-600/80 dark:text-purple-300/70 text-sm mb-3 font-semibold">📖 איך משחקים?</h2>
-        <ul className="flex flex-col gap-2 text-xs text-purple-700/80 dark:text-purple-300/70">
-          <li className="flex items-start gap-2">
-            <span className="mt-0.5">🔤</span>
-            <span>כל שחקן מזין מילה שמתחילה באות האחרונה של המילה הקודמת</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="mt-0.5">🏆</span>
-            <span>ניקוד לפי אורך המילה — מילים ארוכות שוות יותר נקודות</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="mt-0.5">🎯</span>
-            <span><strong>קלאסי:</strong> תורות לסירוגין — כל שחקן ממתין לתורו</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="mt-0.5">⚡</span>
-            <span><strong>בזק:</strong> כולם מתחרים בו-זמנית — הכי מהיר מנצח</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="mt-0.5">🚫</span>
-            <span>אין להשתמש באותה מילה פעמיים</span>
-          </li>
-        </ul>
+        <div className="relative h-8 overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={tipIndex}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -14 }}
+              transition={{ duration: 0.35, ease: 'easeInOut' }}
+              className="absolute inset-0 flex items-center gap-2 text-xs text-purple-700/80 dark:text-purple-300/70"
+            >
+              <span style={{ fontSize: '1rem', lineHeight: 1, flexShrink: 0 }}>{TIPS[tipIndex].icon}</span>
+              <span>{TIPS[tipIndex].text}</span>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+        {/* Dot indicators */}
+        <div className="flex justify-center gap-1.5 mt-3">
+          {TIPS.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setTipIndex(i)}
+              className={`rounded-full transition-all duration-300 ${
+                i === tipIndex
+                  ? 'w-4 h-1.5 bg-purple-500'
+                  : 'w-1.5 h-1.5 bg-purple-300/50 dark:bg-purple-600/40'
+              }`}
+            />
+          ))}
+        </div>
       </motion.div>
 
       {/* Game config (host only) */}
