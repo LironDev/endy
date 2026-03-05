@@ -207,3 +207,13 @@ export async function setPlayerOnline(gameId, uid, isOnline) {
     // Silently fail — game might have ended
   }
 }
+
+/**
+ * Updates a player's custom avatar (emoji + background color).
+ */
+export async function updatePlayerAvatar(gameId, uid, emoji, avatarColor) {
+  await updateDoc(doc(db, 'games', gameId), {
+    [`players.${uid}.emoji`]: emoji ?? null,
+    [`players.${uid}.avatarColor`]: avatarColor ?? null,
+  });
+}

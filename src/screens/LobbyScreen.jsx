@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { PlayerAvatar } from '../components/PlayerAvatar';
+import { AvatarPicker } from '../components/AvatarPicker';
 import { GameCodeDisplay } from '../components/GameCodeDisplay';
 import { playerJoinVariants } from '../animations/variants';
 import { startGame, resetGame } from '../firebase/gameService';
@@ -18,6 +19,7 @@ const TIME_OPTIONS = [
 
 export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
   const [starting, setStarting] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [config, setConfig] = useState({
     mode: gameDoc.config?.mode || GAME_MODES.CLASSIC,
     target: gameDoc.config?.target || 50,
@@ -27,6 +29,7 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
   const isHost = gameDoc.config?.hostId === uid;
   const players = Object.entries(gameDoc.players || {});
   const canStart = players.length >= 1;
+  const myPlayer = gameDoc.players?.[uid];
 
   const handleStart = async () => {
     if (!isHost || !canStart) return;
@@ -45,6 +48,18 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
 
   return (
     <div className="min-h-screen cosmic-bg flex flex-col items-center justify-center p-4 gap-5" dir="rtl">
+
+      {/* Avatar picker modal */}
+      {pickerOpen && (
+        <AvatarPicker
+          gameId={gameId}
+          uid={uid}
+          playerName={myPlayer?.name || ''}
+          currentEmoji={myPlayer?.emoji || null}
+          currentColor={myPlayer?.avatarColor || null}
+          onClose={() => setPickerOpen(false)}
+        />
+      )}
 
       {/* Header */}
       <motion.div
@@ -79,33 +94,44 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
 
         <div className="flex flex-col gap-2 min-h-[80px]">
           <AnimatePresence mode="popLayout">
-            {players.map(([playerId, player]) => (
-              <motion.div
-                key={playerId}
-                variants={playerJoinVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                layout
-                className={`flex items-center gap-3 p-2.5 rounded-xl ${
-                  playerId === uid
-                    ? 'bg-purple-100/80 border border-purple-300/50 dark:bg-purple-700/30 dark:border-purple-500/30'
-                    : 'bg-white/60 dark:bg-purple-950/40'
-                }`}
-              >
-                <PlayerAvatar name={player.name} size="md" isOnline={player.isOnline} isHost={player.isHost} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-purple-900 dark:text-purple-100 font-semibold text-sm truncate">{player.name}</p>
-                  <p className="text-purple-500/60 dark:text-purple-400/50 text-xs">
-                    {player.isHost ? 'מארח' : 'שחקן'}
-                    {playerId === uid ? ' • את/ה' : ''}
-                  </p>
-                </div>
-                {player.isOnline && (
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0" />
-                )}
-              </motion.div>
-            ))}
+            {players.map(([playerId, player]) => {
+              const isMe = playerId === uid;
+              return (
+                <motion.div
+                  key={playerId}
+                  variants={playerJoinVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  layout
+                  className={`flex items-center gap-3 p-2.5 rounded-xl ${
+                    isMe
+                      ? 'bg-purple-100/80 border border-purple-300/50 dark:bg-purple-700/30 dark:border-purple-500/30'
+                      : 'bg-white/60 dark:bg-purple-950/40'
+                  }`}
+                >
+                  <PlayerAvatar
+                    name={player.name}
+                    size="md"
+                    isOnline={player.isOnline}
+                    isHost={player.isHost}
+                    emoji={player.emoji || null}
+                    avatarColor={player.avatarColor || null}
+                    onClick={isMe ? () => setPickerOpen(true) : null}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-purple-900 dark:text-purple-100 font-semibold text-sm truncate">{player.name}</p>
+                    <p className="text-purple-500/60 dark:text-purple-400/50 text-xs">
+                      {player.isHost ? 'מארח' : 'שחקן'}
+                      {isMe ? ' • לחץ על הדמות לעיצוב' : ''}
+                    </p>
+                  </div>
+                  {player.isOnline && (
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0" />
+                  )}
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </div>
       </motion.div>

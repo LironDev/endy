@@ -19,7 +19,17 @@ function getInitials(name) {
     : name.slice(0, 2);
 }
 
-export function PlayerAvatar({ name, size = 'md', isOnline = false, isHost = false }) {
+const EMOJI_SIZES = { xs: 'text-xs', sm: 'text-sm', md: 'text-xl', lg: 'text-3xl' };
+
+export function PlayerAvatar({
+  name,
+  size = 'md',
+  isOnline = false,
+  isHost = false,
+  emoji = null,
+  avatarColor = null,
+  onClick = null,
+}) {
   const sizes = {
     xs: 'w-6 h-6 text-[10px]',
     sm: 'w-8 h-8 text-xs',
@@ -27,14 +37,32 @@ export function PlayerAvatar({ name, size = 'md', isOnline = false, isHost = fal
     lg: 'w-14 h-14 text-lg',
   };
 
+  const bgClass = avatarColor ? '' : getColor(name);
+  const bgStyle = avatarColor ? { backgroundColor: avatarColor } : {};
+
   return (
     <div className="relative inline-block flex-shrink-0">
       <div
-        className={`${sizes[size]} ${getColor(name)} rounded-full flex items-center justify-center font-bold text-white select-none`}
+        className={`${sizes[size]} ${bgClass} rounded-full flex items-center justify-center font-bold text-white select-none transition-all ${
+          onClick ? 'cursor-pointer hover:brightness-110 ring-2 ring-white/30 hover:ring-white/60' : ''
+        }`}
+        style={bgStyle}
         aria-label={name}
+        onClick={onClick || undefined}
       >
-        {getInitials(name)}
+        {emoji ? (
+          <span className={EMOJI_SIZES[size]}>{emoji}</span>
+        ) : (
+          getInitials(name)
+        )}
       </div>
+
+      {/* Edit badge — only when avatar is clickable */}
+      {onClick && (
+        <span className="absolute -bottom-0.5 -left-0.5 w-4 h-4 bg-white dark:bg-purple-900 rounded-full flex items-center justify-center text-[9px] shadow-sm pointer-events-none">
+          ✏️
+        </span>
+      )}
 
       {/* Online indicator — border color adapts to theme via CSS variable */}
       {isOnline !== undefined && (

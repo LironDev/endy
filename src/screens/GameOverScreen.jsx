@@ -124,7 +124,13 @@ export function GameOverScreen({ gameDoc, gameId, uid, onHome }) {
                 className={`flex flex-col items-center gap-1 ${idx === 0 ? 'order-2' : idx === 1 ? 'order-1' : 'order-3'}`}
               >
                 <span className="text-2xl">{MEDALS[idx]}</span>
-                <PlayerAvatar name={player.name} size={idx === 0 ? 'lg' : 'md'} isHost={player.isHost} />
+                <PlayerAvatar
+                  name={player.name}
+                  size={idx === 0 ? 'lg' : 'md'}
+                  isHost={player.isHost}
+                  emoji={player.emoji || null}
+                  avatarColor={player.avatarColor || null}
+                />
                 <span className={`text-xs font-semibold max-w-[60px] truncate text-center ${
                   player.id === uid
                     ? 'text-purple-700 dark:text-purple-200'

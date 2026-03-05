@@ -59,6 +59,8 @@ export function Leaderboard({ players, uid, registerRef, compact = false }) {
               size="sm"
               isOnline={player.isOnline}
               isHost={player.isHost}
+              emoji={player.emoji || null}
+              avatarColor={player.avatarColor || null}
             />
 
             {/* Name */}
