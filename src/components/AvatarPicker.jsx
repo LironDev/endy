@@ -4,19 +4,18 @@ import { PlayerAvatar } from './PlayerAvatar';
 import { updatePlayerAvatar } from '../firebase/gameService';
 
 const EMOJIS = [
-  // פנים
-  '😀', '😎', '🤩', '🥳', '🤠', '😈',
-  '🤡', '👻', '💀', '🤖', '👾', '🧙',
-  // חיות 1
-  '🦊', '🐱', '🐶', '🐸', '🦁', '🐼',
-  '🐨', '🦄', '🐉', '🐯', '🐺', '🦝',
-  // חיות 2
-  '🦅', '🐙', '🦈', '🦋', '🦖', '🐊',
-  // כוכבים ואנרגיה
-  '🌟', '⚡', '🔥', '💎', '🎯', '🏆',
-  // שונות
-  '✨', '🌈', '🎪', '🎭', '🎸', '🍕',
-  '🌵', '🌋', '🎃', '🚀', '💥', '🎲',
+  // דמויות ופנים (כולל דמויות נשיות, פנטזיה וסטייל)
+  '😀', '😎', '🤩', '🥳', '🤠', '😈', '🤡', '👻', '💀', '🤖', '👾', '🧙', 
+  '👸', '💃', '💅', '🦸‍♀️', '🥷', '👩‍🚀', '👩‍🎤', '🧜‍♀️', '🧚‍♀️', '👰‍♀️', '👒',
+  '👽', '🧛', '🧟', '🧞', '🕵️', '🧑‍🚀', '🦸', '💇‍♀️', '🧘‍♀️', '🧗‍♀️', '🏄‍♀️',
+
+  // לבבות ורומנטיקה (התוספת החדשה)
+  '❤️', '💖', '💝', '💘', '💓', '💞', '💌', '🌸', '🌹', '🎀',
+  '🍭', '🦄', '✨', '🎈', '💍', '💎', '💄', '👛', '🌈', '🔥', '🔮',
+
+  // עולם החי (יונקים, זוחלים ופנטזיה)
+  '🦊', '🐱', '🐶', '🐸', '🦁', '🐼', '🐨', '🐉', '🐯', '🐺', '🦝',
+  '🦅', '🐙', '🦈', '🦋', '🦖', '🐊', '🦍', '🐘', '🦏', '🦓', '🦒',
 ];
 
 const COLOR_OPTIONS = [
@@ -72,7 +71,7 @@ export function AvatarPicker({ gameId, uid, playerName, currentEmoji, currentCol
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.85, opacity: 0, y: 20 }}
           transition={{ type: 'spring', damping: 22, stiffness: 320 }}
-          className="glass-card w-full max-w-xs"
+          className="glass-card w-full max-w-xs max-h-[90svh] overflow-y-auto"
           onClick={e => e.stopPropagation()}
           dir="rtl"
         >
@@ -106,7 +105,7 @@ export function AvatarPicker({ gameId, uid, playerName, currentEmoji, currentCol
 
           {/* Emoji grid */}
           <p className="text-purple-600/80 dark:text-purple-400/70 text-xs mb-2 font-semibold">אימוגי</p>
-          <div className="grid grid-cols-6 gap-1.5 mb-4">
+          <div className="grid grid-cols-6 gap-1.5 mb-4 max-h-44 overflow-y-auto overscroll-contain pr-0.5 scrollbar-thin">
             {EMOJIS.map(emoji => {
               const isSelected = selectedEmoji === emoji;
               return (
