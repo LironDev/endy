@@ -113,7 +113,7 @@ export function GameScreen({
               ? 'bg-blue-100/80 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300'
               : 'bg-amber-100/80 text-amber-700 dark:bg-amber-900/60 dark:text-amber-300'
           }`}>
-            {isClassic ? '🎯 קלאסי' : '⚡ בליץ'}
+            {isClassic ? '🎯 קלאסי' : '⚡ בזק'}
           </span>
 
           <AnimatePresence mode="wait">
@@ -150,6 +150,7 @@ export function GameScreen({
           players={gameDoc.players || {}}
           uid={uid}
           registerRef={registerLeaderboardRef}
+          currentTurnUid={gameDoc.state?.currentTurnUid || null}
           compact
         />
       </section>

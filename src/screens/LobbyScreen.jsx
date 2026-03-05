@@ -23,7 +23,7 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
   const [config, setConfig] = useState({
     mode: gameDoc.config?.mode || GAME_MODES.CLASSIC,
     target: gameDoc.config?.target || 50,
-    timeLimit: gameDoc.config?.timeLimit || null,
+    timeLimit: gameDoc.config?.timeLimit ?? 300,
   });
 
   const isHost = gameDoc.config?.hostId === uid;
@@ -136,6 +136,38 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
         </div>
       </motion.div>
 
+      {/* How to play */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25 }}
+        className="w-full max-w-sm glass-card"
+      >
+        <h2 className="text-purple-600/80 dark:text-purple-300/70 text-sm mb-3 font-semibold">📖 איך משחקים?</h2>
+        <ul className="flex flex-col gap-2 text-xs text-purple-700/80 dark:text-purple-300/70">
+          <li className="flex items-start gap-2">
+            <span className="mt-0.5">🔤</span>
+            <span>כל שחקן מזין מילה שמתחילה באות האחרונה של המילה הקודמת</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="mt-0.5">🏆</span>
+            <span>ניקוד לפי אורך המילה — מילים ארוכות שוות יותר נקודות</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="mt-0.5">🎯</span>
+            <span><strong>קלאסי:</strong> תורות לסירוגין — כל שחקן ממתין לתורו</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="mt-0.5">⚡</span>
+            <span><strong>בזק:</strong> כולם מתחרים בו-זמנית — הכי מהיר מנצח</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="mt-0.5">🚫</span>
+            <span>אין להשתמש באותה מילה פעמיים</span>
+          </li>
+        </ul>
+      </motion.div>
+
       {/* Game config (host only) */}
       {isHost && (
         <motion.div
@@ -152,7 +184,7 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
             <div className="flex gap-1 bg-purple-100/70 dark:bg-purple-950/60 rounded-xl p-1">
               {[
                 { id: GAME_MODES.CLASSIC, label: '🎯 קלאסי', desc: 'תורות לסירוגין' },
-                { id: GAME_MODES.BLITZ, label: '⚡ בליץ', desc: 'כולם בו-זמנית' },
+                { id: GAME_MODES.BLITZ, label: '⚡ בזק', desc: 'כולם בו-זמנית' },
               ].map(mode => (
                 <button
                   key={mode.id}
@@ -169,7 +201,7 @@ export function LobbyScreen({ gameDoc, gameId, uid, onLeave }) {
               ))}
             </div>
             <p className="text-purple-500/60 dark:text-purple-500/50 text-xs mt-1 text-center">
-              {config.mode === GAME_MODES.CLASSIC ? 'כל שחקן מחכה לתורו' : 'כולם יכולים לשלוח (לא אחד אחרי עצמו)'}
+              {config.mode === GAME_MODES.CLASSIC ? 'כל שחקן מחכה לתורו' : 'כולם יכולים לשלוח מילה (לא אחד אחרי עצמו)'}
             </p>
           </div>
 

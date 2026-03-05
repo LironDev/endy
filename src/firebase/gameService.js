@@ -49,6 +49,7 @@ export async function joinGame(gameId, uid, name) {
 
   if (!snap.exists()) throw new Error('המשחק לא נמצא');
   const data = snap.data();
+  if (data.status === GAME_STATUS.ENDED) throw new Error('המשחק הסתיים 🏁');
   if (data.status !== GAME_STATUS.LOBBY) throw new Error('המשחק כבר התחיל');
   if (Object.keys(data.players).length >= 8) throw new Error('המשחק מלא (מקסימום 8 שחקנים)');
   if (data.players[uid]) return; // already in game

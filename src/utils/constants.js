@@ -28,7 +28,7 @@ export const GAME_ID_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 export const DEFAULT_CONFIG = {
   mode: GAME_MODES.CLASSIC,
   target: 50,
-  timeLimit: null,
+  timeLimit: 300,
 };
 
 export const MAX_PLAYERS = 8;

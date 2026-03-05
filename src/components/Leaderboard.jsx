@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue } from 'framer-motion';
 import { PlayerAvatar } from './PlayerAvatar';
 import { leaderboardRowVariants } from '../animations/variants';
@@ -23,70 +23,122 @@ function OdometerScore({ value }) {
   return <span ref={displayRef}>{value}</span>;
 }
 
-export function Leaderboard({ players, uid, registerRef, compact = false }) {
+// Random animation types for the current-turn player's avatar
+const TURN_ANIMATIONS = [
+  { // bounce
+    animate: { y: [0, -6, 0], scale: [1, 1.15, 1] },
+    transition: { duration: 0.65, repeat: Infinity, ease: 'easeInOut' },
+  },
+  { // spin
+    animate: { rotate: [0, 360] },
+    transition: { duration: 1.4, repeat: Infinity, ease: 'linear' },
+  },
+  { // wiggle
+    animate: { rotate: [-9, 9, -9, 9, 0] },
+    transition: { duration: 0.55, repeat: Infinity, repeatDelay: 0.7 },
+  },
+  { // pulse
+    animate: { scale: [1, 1.22, 1] },
+    transition: { duration: 0.72, repeat: Infinity, ease: 'easeInOut' },
+  },
+  { // float
+    animate: { y: [0, -7, 0] },
+    transition: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' },
+  },
+];
+
+export function Leaderboard({ players, uid, registerRef, compact = false, currentTurnUid = null }) {
   const sorted = Object.entries(players || {})
     .map(([id, data]) => ({ id, ...data }))
     .sort((a, b) => b.score - a.score);
 
   const displayList = compact ? sorted.slice(0, 6) : sorted;
 
+  // Pick a new random animation each time the turn changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const turnAnim = useMemo(() => {
+    if (!currentTurnUid) return null;
+    return TURN_ANIMATIONS[Math.floor(Math.random() * TURN_ANIMATIONS.length)];
+  }, [currentTurnUid]);
+
   return (
     <div className={`flex flex-col gap-1 w-full ${compact ? '' : 'max-h-60 overflow-y-auto'}`} dir="rtl">
       <AnimatePresence mode="popLayout">
-        {displayList.map((player, idx) => (
-          <motion.div
-            key={player.id}
-            layout
-            variants={leaderboardRowVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            ref={el => registerRef && registerRef(player.id, el)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-colors duration-200 ${
-              player.id === uid
-                ? 'bg-purple-100/60 border border-purple-300/50 dark:bg-purple-600/30 dark:border-purple-500/40'
-                : 'bg-white/50 dark:bg-purple-950/40'
-            }`}
-          >
-            {/* Rank */}
-            <span className="text-purple-500/60 dark:text-purple-400/50 text-xs w-4 flex-shrink-0 text-center font-mono">
-              {idx + 1}
-            </span>
+        {displayList.map((player, idx) => {
+          const isCurrentTurn = player.id === currentTurnUid;
 
-            {/* Avatar */}
-            <PlayerAvatar
-              name={player.name}
-              size="sm"
-              isOnline={player.isOnline}
-              isHost={player.isHost}
-              emoji={player.emoji || null}
-              avatarColor={player.avatarColor || null}
-            />
-
-            {/* Name */}
-            <span className={`text-sm font-medium flex-1 truncate ${
-              player.id === uid
-                ? 'text-purple-900 dark:text-purple-100'
-                : 'text-purple-700/90 dark:text-purple-200/80'
-            }`}>
-              {player.name}
-              {player.id === uid && (
-                <span className="text-purple-500/60 dark:text-purple-400/60 text-xs mr-1">(את/ה)</span>
-              )}
-            </span>
-
-            {/* Score */}
+          return (
             <motion.div
-              key={`score-${player.score}`}
-              initial={{ scale: player.score > 0 ? 1.3 : 1 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              className="font-black text-sm text-purple-900 dark:text-purple-100 tabular-nums min-w-[2.5rem] text-left"
+              key={player.id}
+              layout
+              variants={leaderboardRowVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              ref={el => registerRef && registerRef(player.id, el)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-colors duration-200 ${
+                player.id === uid
+                  ? 'bg-purple-100/60 border border-purple-300/50 dark:bg-purple-600/30 dark:border-purple-500/40'
+                  : 'bg-white/50 dark:bg-purple-950/40'
+              }`}
             >
-              <OdometerScore value={player.score} />
+              {/* Rank */}
+              <span className="text-purple-500/60 dark:text-purple-400/50 text-xs w-4 flex-shrink-0 text-center font-mono">
+                {idx + 1}
+              </span>
+
+              {/* Avatar — animated when it's this player's turn */}
+              {isCurrentTurn && turnAnim ? (
+                <motion.div
+                  animate={turnAnim.animate}
+                  transition={turnAnim.transition}
+                  style={{ display: 'inline-flex' }}
+                >
+                  <PlayerAvatar
+                    name={player.name}
+                    size="sm"
+                    isOnline={player.isOnline}
+                    isHost={player.isHost}
+                    emoji={player.emoji || null}
+                    avatarColor={player.avatarColor || null}
+                  />
+                </motion.div>
+              ) : (
+                <PlayerAvatar
+                  name={player.name}
+                  size="sm"
+                  isOnline={player.isOnline}
+                  isHost={player.isHost}
+                  emoji={player.emoji || null}
+                  avatarColor={player.avatarColor || null}
+                />
+              )}
+
+              {/* Name */}
+              <span className={`text-sm font-medium flex-1 truncate ${
+                player.id === uid
+                  ? 'text-purple-900 dark:text-purple-100'
+                  : 'text-purple-700/90 dark:text-purple-200/80'
+              }`}>
+                {player.name}
+                {player.id === uid && (
+                  <span className="text-purple-500/60 dark:text-purple-400/60 text-xs mr-1">(את/ה)</span>
+                )}
+              </span>
+
+              {/* Score */}
+              <motion.div
+                key={`score-${player.score}`}
+                initial={{ scale: player.score > 0 ? 1.3 : 1 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className="font-black text-sm text-purple-900 dark:text-purple-100 tabular-nums min-w-[2.5rem] text-left"
+              >
+                <OdometerScore value={player.score} />
+              </motion.div>
             </motion.div>
-          </motion.div>
-        ))}
+          );
+        })}
       </AnimatePresence>
     </div>
   );
