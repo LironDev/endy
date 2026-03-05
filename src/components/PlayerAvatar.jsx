@@ -51,7 +51,12 @@ export function PlayerAvatar({
         onClick={onClick || undefined}
       >
         {emoji ? (
-          <span className={EMOJI_SIZES[size]}>{emoji}</span>
+          <span
+            className={EMOJI_SIZES[size]}
+            style={{ lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            {emoji}
+          </span>
         ) : (
           getInitials(name)
         )}

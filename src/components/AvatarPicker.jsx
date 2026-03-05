@@ -4,10 +4,19 @@ import { PlayerAvatar } from './PlayerAvatar';
 import { updatePlayerAvatar } from '../firebase/gameService';
 
 const EMOJIS = [
-  '😀', '😎', '🤩', '🥳', '🤖', '👾',
+  // פנים
+  '😀', '😎', '🤩', '🥳', '🤠', '😈',
+  '🤡', '👻', '💀', '🤖', '👾', '🧙',
+  // חיות 1
   '🦊', '🐱', '🐶', '🐸', '🦁', '🐼',
-  '🐨', '🦄', '🐉', '🦋', '🌟', '⚡',
-  '🔥', '💎', '🎯', '🏆', '✨', '🎪',
+  '🐨', '🦄', '🐉', '🐯', '🐺', '🦝',
+  // חיות 2
+  '🦅', '🐙', '🦈', '🦋', '🦖', '🐊',
+  // כוכבים ואנרגיה
+  '🌟', '⚡', '🔥', '💎', '🎯', '🏆',
+  // שונות
+  '✨', '🌈', '🎪', '🎭', '🎸', '🍕',
+  '🌵', '🌋', '🎃', '🚀', '💥', '🎲',
 ];
 
 const COLOR_OPTIONS = [
@@ -101,13 +110,13 @@ export function AvatarPicker({ gameId, uid, playerName, currentEmoji, currentCol
                 key={emoji}
                 whileTap={{ scale: 0.85 }}
                 onClick={() => handleEmojiSelect(emoji)}
-                className={`w-full aspect-square rounded-xl text-xl flex items-center justify-center transition-all ${
+                className={`w-full aspect-square rounded-xl flex items-center justify-center transition-all ${
                   selectedEmoji === emoji
                     ? 'bg-purple-500 shadow-lg shadow-purple-500/40 scale-105'
                     : 'bg-purple-100/70 dark:bg-purple-900/50 hover:bg-purple-200/80 dark:hover:bg-purple-800/60'
                 }`}
               >
-                {emoji}
+                <span style={{ fontSize: '1.2rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{emoji}</span>
               </motion.button>
             ))}
           </div>

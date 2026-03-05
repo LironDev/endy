@@ -31,7 +31,8 @@ export function ThemeToggle() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 8, opacity: 0 }}
           transition={{ duration: 0.18 }}
-          className="text-base leading-none select-none"
+          className="text-base select-none flex items-center justify-center"
+          style={{ lineHeight: 1 }}
         >
           {isDark ? '🌙' : '☀️'}
         </motion.span>
