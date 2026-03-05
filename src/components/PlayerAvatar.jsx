@@ -53,7 +53,7 @@ export function PlayerAvatar({
         {emoji ? (
           <span
             className={EMOJI_SIZES[size]}
-            style={{ lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'translateY(8%)' }}
           >
             {emoji}
           </span>

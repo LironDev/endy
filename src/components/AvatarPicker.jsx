@@ -116,7 +116,7 @@ export function AvatarPicker({ gameId, uid, playerName, currentEmoji, currentCol
                     : 'bg-purple-100/70 dark:bg-purple-900/50 hover:bg-purple-200/80 dark:hover:bg-purple-800/60'
                 }`}
               >
-                <span style={{ fontSize: '1.2rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{emoji}</span>
+                <span style={{ fontSize: '1.2rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'translateY(8%)' }}>{emoji}</span>
               </motion.button>
             ))}
           </div>

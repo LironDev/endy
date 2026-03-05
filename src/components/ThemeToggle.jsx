@@ -32,7 +32,7 @@ export function ThemeToggle() {
           exit={{ y: 8, opacity: 0 }}
           transition={{ duration: 0.18 }}
           className="text-base select-none flex items-center justify-center"
-          style={{ lineHeight: 1 }}
+          style={{ lineHeight: 1, transform: 'translateY(8%)' }}
         >
           {isDark ? '🌙' : '☀️'}
         </motion.span>
