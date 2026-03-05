@@ -4,6 +4,19 @@ import App from './App.jsx';
 import { ensureAuth } from './firebase/auth.js';
 import './index.css';
 
+// ── PWA auto-reload on new service worker ──────────────────────────────────
+// When a new SW takes control (skipWaiting + clientsClaim), reload the page
+// so users always run the latest version. The `refreshing` flag prevents loops.
+if ('serviceWorker' in navigator) {
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) {
+      refreshing = true;
+      window.location.reload();
+    }
+  });
+}
+
 const requiredEnvVars = [
   'VITE_FIREBASE_API_KEY',
   'VITE_FIREBASE_AUTH_DOMAIN',
