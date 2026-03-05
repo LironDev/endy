@@ -90,8 +90,10 @@ export function AvatarPicker({ gameId, uid, playerName, currentEmoji, currentCol
           {/* Live preview */}
           <div className="flex justify-center mb-5">
             <motion.div
-              animate={saving ? { opacity: 0.7 } : { opacity: 1 }}
-              transition={{ duration: 0.15 }}
+              key={selectedEmoji + selectedColor}
+              initial={{ scale: 0.55, rotate: -20, opacity: 0.6 }}
+              animate={{ scale: 1, rotate: 0, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 520, damping: 18 }}
             >
               <PlayerAvatar
                 name={playerName}
@@ -105,20 +107,32 @@ export function AvatarPicker({ gameId, uid, playerName, currentEmoji, currentCol
           {/* Emoji grid */}
           <p className="text-purple-600/80 dark:text-purple-400/70 text-xs mb-2 font-semibold">אימוגי</p>
           <div className="grid grid-cols-6 gap-1.5 mb-4">
-            {EMOJIS.map(emoji => (
-              <motion.button
-                key={emoji}
-                whileTap={{ scale: 0.85 }}
-                onClick={() => handleEmojiSelect(emoji)}
-                className={`w-full aspect-square rounded-xl flex items-center justify-center transition-all ${
-                  selectedEmoji === emoji
-                    ? 'bg-purple-500 shadow-lg shadow-purple-500/40 scale-105'
-                    : 'bg-purple-100/70 dark:bg-purple-900/50 hover:bg-purple-200/80 dark:hover:bg-purple-800/60'
-                }`}
-              >
-                <span style={{ fontSize: '1.2rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'translateY(8%)' }}>{emoji}</span>
-              </motion.button>
-            ))}
+            {EMOJIS.map(emoji => {
+              const isSelected = selectedEmoji === emoji;
+              return (
+                <motion.button
+                  key={emoji}
+                  onClick={() => handleEmojiSelect(emoji)}
+                  whileTap={{ scale: 0.72 }}
+                  whileHover={!isSelected ? { scale: 1.22, y: -3, rotate: [-4, 4, -4, 0], transition: { duration: 0.35 } } : {}}
+                  animate={isSelected
+                    ? { scale: [1, 1.14, 1], y: [0, -3, 0] }
+                    : { scale: 1, y: 0 }
+                  }
+                  transition={isSelected
+                    ? { repeat: Infinity, duration: 1.6, ease: 'easeInOut' }
+                    : { type: 'spring', stiffness: 300, damping: 20 }
+                  }
+                  className={`w-full aspect-square rounded-xl flex items-center justify-center transition-colors ${
+                    isSelected
+                      ? 'bg-purple-500 shadow-lg shadow-purple-500/40'
+                      : 'bg-purple-100/70 dark:bg-purple-900/50 hover:bg-purple-200/80 dark:hover:bg-purple-800/60'
+                  }`}
+                >
+                  <span style={{ fontSize: '1.2rem', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'translateY(8%)' }}>{emoji}</span>
+                </motion.button>
+              );
+            })}
           </div>
 
           {/* Color swatches */}

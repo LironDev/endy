@@ -51,12 +51,16 @@ export function PlayerAvatar({
         onClick={onClick || undefined}
       >
         {emoji ? (
-          <span
+          <motion.span
+            key={emoji}
             className={EMOJI_SIZES[size]}
-            style={{ lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: 'translateY(8%)' }}
+            style={{ lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', translateY: '8%' }}
+            initial={{ scale: 0.3, rotate: -25 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 16 }}
           >
             {emoji}
-          </span>
+          </motion.span>
         ) : (
           getInitials(name)
         )}
