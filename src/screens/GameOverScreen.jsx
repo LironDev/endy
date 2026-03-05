@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import confetti from 'canvas-confetti';
 import toast from 'react-hot-toast';
 import { PlayerAvatar } from '../components/PlayerAvatar';
 import { Leaderboard } from '../components/Leaderboard';
@@ -16,6 +17,60 @@ const MEDALS = ['🥇', '🥈', '🥉'];
 export function GameOverScreen({ gameDoc, gameId, uid, onHome }) {
   const [resetting, setResetting] = useState(false);
   const [sharing, setSharing] = useState(false);
+
+  // ── Confetti for top 3 ─────────────────────────────────────────────────────
+  useEffect(() => {
+    const topCount = Math.min(players.length, 3);
+    if (topCount === 0) return;
+
+    // Burst from left cannon
+    const fireLeft = () => confetti({
+      particleCount: 60,
+      angle: 60,
+      spread: 65,
+      origin: { x: 0, y: 0.65 },
+      colors: ['#a855f7', '#ec4899', '#fbbf24', '#34d399', '#60a5fa'],
+      scalar: 1.1,
+      gravity: 0.9,
+    });
+
+    // Burst from right cannon
+    const fireRight = () => confetti({
+      particleCount: 60,
+      angle: 120,
+      spread: 65,
+      origin: { x: 1, y: 0.65 },
+      colors: ['#a855f7', '#ec4899', '#fbbf24', '#34d399', '#60a5fa'],
+      scalar: 1.1,
+      gravity: 0.9,
+    });
+
+    // Gold stars for 1st place
+    const fireStars = () => confetti({
+      particleCount: 30,
+      angle: 90,
+      spread: 120,
+      origin: { x: 0.5, y: 0.5 },
+      shapes: ['star'],
+      colors: ['#fbbf24', '#f59e0b', '#fcd34d'],
+      scalar: 1.4,
+      gravity: 0.7,
+    });
+
+    // Initial big burst
+    fireLeft();
+    fireRight();
+    setTimeout(fireStars, 200);
+
+    // Second wave
+    setTimeout(() => { fireLeft(); fireRight(); }, 600);
+
+    // Third wave (only if 3 players on podium)
+    if (topCount >= 3) {
+      setTimeout(() => { fireLeft(); fireRight(); fireStars(); }, 1200);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const players = Object.entries(gameDoc.players || {})
     .map(([id, data]) => ({ id, ...data }))
