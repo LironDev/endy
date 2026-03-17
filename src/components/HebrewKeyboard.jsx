@@ -5,9 +5,9 @@ import { motion } from 'framer-motion';
  * Rows listed right→left so RTL flex renders them in correct physical position.
  */
 const ROWS = [
-  ['פ', 'מ', 'ן', 'ו', 'ט', 'א', 'ר', 'ק'],
+  ['פ', 'ם', 'ן', 'ו', 'ט', 'א', 'ר', 'ק'],
   ['ף', 'ך', 'ל', 'ח', 'י', 'ע', 'כ', 'ג', 'ד', 'ש'],
-  ['ץ', 'ת', 'צ', 'ם', 'נ', 'ה', 'ב', 'ס', 'ז'],
+  ['ץ', 'ת', 'צ', 'ם', 'נ', 'ה', 'ב', 'מ', 'ז'],
 ];
 
 export function HebrewKeyboard({ onKey, onDelete, onSpace, onSubmit, disabled }) {
